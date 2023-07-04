@@ -335,10 +335,8 @@ def index():
 def move_image(backend_path, frontend_path, img_name):
     # Set the source and destination paths
     source_path = backend_path + img_name
-    frontend_folder = "../frontend/public/images/input/"
-    frontend_folder = os.path.abspath(frontend_folder)
 
-    destination_path = os.path.join(frontend_folder, img_name)
+    destination_path = os.path.join(frontend_path, img_name)
 
     print("source_path", source_path)
     print("destination_path", destination_path)
