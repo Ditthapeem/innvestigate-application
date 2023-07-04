@@ -82,10 +82,10 @@ const Suggest = () => {
         console.log("boung", (lowerBound*100)/50)
         console.log("range", findRange(0));
 
-        for (let i = lowerBound; i < highestNumber+findRange(data[data.length - 1]); i += findRange(data[data.length - 1])) {
+        for (let i = lowerBound; i < highestNumber+50; i += 50) {
             let count = 0
             data.forEach(element => {
-                if(element > i && element < i+findRange(data[data.length - 1])){
+                if(element > i && element < i+50){
                     count +=1
                 }
             })
@@ -245,7 +245,7 @@ const Suggest = () => {
                 <center><select
                     value={selectBin.group + 1}
                     onChange={(event) => {
-                    const selectedGroup = parseInt(event.target.value, 10) - 1;
+                    const selectedGroup = parseInt(event.target.value) - 1;
                     setSelectBin((values) => ({
                         ...values,
                         group: selectedGroup,
@@ -253,6 +253,9 @@ const Suggest = () => {
                     }));
                     }}
                 >
+                <option value={1}>
+                        Select group
+                </option>
                 {group.map((name) => (
                     <option key={name} value={name}>
                     Group {name}
