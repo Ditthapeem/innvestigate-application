@@ -137,6 +137,7 @@ CORS(app)
 
 # static paths
 STATIC_PATH = "innvestigate-gui/static/"
+FRONTEND_PATH = "../frontend/public/images/input/"
 
 INPUT_PATH = STATIC_PATH + "input/"
 INPUT_IMAGES_PATH = INPUT_PATH + "images/"
@@ -334,7 +335,13 @@ def index():
 def move_image(backend_path, frontend_path, img_name):
     # Set the source and destination paths
     source_path = backend_path + img_name
-    destination_path = frontend_path + img_name
+    frontend_folder = "../frontend/public/images/input/"
+    frontend_folder = os.path.abspath(frontend_folder)
+
+    destination_path = os.path.join(frontend_folder, img_name)
+
+    print("source_path", source_path)
+    print("destination_path", destination_path)
 
     # # Move the file
     # shutil.move(source_path, destination_path)
@@ -366,7 +373,10 @@ def upload_images():
     except flask_uploads.UploadNotAllowed:
         response = Response(0, "error", "Invalid input image/s.")
     
-    for image in images:         
+    current_path = os.getcwd()
+    print(current_path)
+    for image in images:   
+        print(image)      
         move_image(INPUT_IMAGES_PATH, frontend_folder, image)
     return jsonify(response.toJSON())
 
@@ -1915,7 +1925,7 @@ def visualize():
                         is_n_result_square = square == n_result
                         if not is_n_result_square:
                             nr += 1
-                            nc += 1
+                            nc += 1 
                             square = nr * nc
                         
                         fig, axs = plt.subplots(nr, nc)

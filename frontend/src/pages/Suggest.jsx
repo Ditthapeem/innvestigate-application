@@ -79,10 +79,13 @@ const Suggest = () => {
         let bar = 1
         let index = 0
 
-        for (let i = lowerBound; i < highestNumber+50; i += 50) {
+        console.log("boung", (lowerBound*100)/50)
+        console.log("range", findRange(0));
+
+        for (let i = lowerBound; i < highestNumber+findRange(data[data.length - 1]); i += findRange(data[data.length - 1])) {
             let count = 0
             data.forEach(element => {
-                if(element > i && element < i+50){
+                if(element > i && element < i+findRange(data[data.length - 1])){
                     count +=1
                 }
             })
@@ -134,6 +137,15 @@ const Suggest = () => {
     function findLowerBound(number) {
         const lowerBound = Math.floor(number / 10) * 10;
         return lowerBound;
+    }
+
+    function findRange(number) {
+        if (number >= 1) {
+            const lowerBound = Math.floor(number / 10) * 10;
+            return lowerBound / 10;
+        } else {
+          return Math.floor(number * 10) / 10;
+        }
     }
 
     function ShowImages() {
@@ -230,16 +242,23 @@ const Suggest = () => {
         const [binSelected, setBinSelected] = useState(null);
         return(
             <div className="model-button-group">
-                {group.map(name => (
-                    <button 
-                    style={ name === selectBin.group+1 && selectBin.group !== null ? { background: configData.COLOR.GREEN, color: "white"} : {}}
-                    key={name}
-                    active={binSelected === name}
-                    onClick={() => {setSelectBin(values => ({...values, group: name-1, number:chart[name-1].numberImg}))}}
-                    >
-                        {`Group${name}`}
-                    </button>
+                <center><select
+                    value={selectBin.group + 1}
+                    onChange={(event) => {
+                    const selectedGroup = parseInt(event.target.value, 10) - 1;
+                    setSelectBin((values) => ({
+                        ...values,
+                        group: selectedGroup,
+                        number: chart[selectedGroup].numberImg,
+                    }));
+                    }}
+                >
+                {group.map((name) => (
+                    <option key={name} value={name}>
+                    Group {name}
+                    </option>
                 ))}
+                </select></center>
             </div>
         );
     }
