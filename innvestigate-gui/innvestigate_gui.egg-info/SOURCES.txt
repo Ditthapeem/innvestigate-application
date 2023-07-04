@@ -1,0 +1,15 @@
+README.md
+setup.py
+innvestigate-gui/__init__.py
+innvestigate-gui/main.py
+innvestigate-gui/classes/ClassificationMapping.py
+innvestigate-gui/classes/Response.py
+innvestigate-gui/classes/Suggestion.py
+innvestigate-gui/classes/Visualization.py
+innvestigate-gui/classes/__init__.py
+innvestigate_gui.egg-info/PKG-INFO
+innvestigate_gui.egg-info/SOURCES.txt
+innvestigate_gui.egg-info/dependency_links.txt
+innvestigate_gui.egg-info/not-zip-safe
+innvestigate_gui.egg-info/requires.txt
+innvestigate_gui.egg-info/top_level.txt

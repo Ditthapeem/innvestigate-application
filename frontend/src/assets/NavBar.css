@@ -1,0 +1,60 @@
+.nav-bar {
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    display: flex;
+    background-color: var(--green);
+    width: 100vw;
+    z-index: 4;
+}
+
+.nav-bar div{
+    text-align: center;
+    display: flex;
+}
+
+.nav-bar div p{
+    line-height: 0.5;
+    font-weight: 500;
+    font-size: 22px;
+    color: white;
+}
+
+.nav-bar button {
+    font-size: 20px;
+    padding: 10px;
+    height: 50px;
+    width: 100px;
+    margin: 20px;
+    font-weight: 500;
+    color: var(--black);
+}
+
+.nav-bar p {
+    font-size: 20px;
+    padding: 15px;
+    width: 200px;
+    font-weight: 500;
+}
+
+.nav-bar button:hover {
+    opacity: 60%;
+}
+
+.nav-bar input {
+    height: 45px;
+    width: 45px;
+    margin: 5px 0 0 0;
+}
+
+.nav-bar input:hover{
+    opacity: 60%;
+}
+
+.nav-select {
+    color: var(--yellow);
+}
+
+.nav-not-select {
+    color: white;
+}

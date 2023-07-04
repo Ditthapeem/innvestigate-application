@@ -1,0 +1,2123 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1 xmlns="http://www.w3.org/1999/html">{% block title %}iNNvestigate-GUI{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="tab">
+	<button id="tab_main" class="tablinks" onclick="openTab($(this), 'main')">Home</button>
+</div>
+
+<div id="main" class="main_view tabcontent">
+	<div id="upload_images" class="main_block file_upload">
+		<form id="upload_images_form" method="post" enctype="multipart/form-data">
+			<label for="images">Click to upload input images</label>
+			<input name="images" id="images" type="file" multiple>
+		</form>
+		
+		<div class="upload_status">
+			<div class="progress" id="upload_images_progressbar"></div>
+			<button type="reset" class="ajax_abort" id="upload_images_abort">Cancel upload</button>
+		</div>
+	</div>
+	
+	<div id="model_selection" class="main_block">
+		<button id="custom_model_button">Custom pre-trained model</button>
+		<button id="predefined_model_button">Predefined model</button>
+	</div>
+	
+	<div id="custom_model_selection" class="main_block">
+		<div id="custom_models">
+			<p>Models containing lambda layers must have been exported using same Python version in use for this
+				tool.</p>
+			
+			<!-- loaded dynamically -->
+			<button type="button" id="add_custom_model">Add</button>
+		</div>
+		
+		<!-- only one also if user loads many custom models -->
+		<div id="classification" class="secondary_block">
+			<div class="input_block">
+				<label for="custom_n_classes">Number of classes: </label>
+				<input type="number" name="custom_n_classes" id="custom_n_classes"
+				       placeholder="Insert number of classes">
+			</div>
+			
+			<div id="upload_custom_class_index" class="file_upload">
+				<form id="upload_custom_class_index_form" method="post" enctype="multipart/form-data">
+					<label for="custom_class_index">Load your custom class index (JSON file)</label>
+					<input name="custom_class_index" id="custom_class_index" type="file">
+				</form>
+				
+				<div class="upload_status">
+					<div class="progress" id="upload_custom_class_index_progressbar"></div>
+					<button type="reset" class="ajax_abort" id="upload_custom_class_index_abort">Cancel upload
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="predefined_model_selection" class="main_block input_block">
+		<div id="predefined_models" class="secondary_block">
+			<div><input type="checkbox" id="VGG16"> <label for="VGG16"> VGG16 </label></div>
+			<div><input type="checkbox" id="VGG19"> <label for="VGG19"> VGG19 </label></div>
+			<div><input type="checkbox" id="ResNet50"> <label for="ResNet50"> ResNet50 </label></div>
+			<div><input type="checkbox" id="Xception"> <label for="Xception"> Xception </label></div>
+			<div><input type="checkbox" id="InceptionV3"> <label for="InceptionV3"> InceptionV3 </label></div>
+			<div><input type="checkbox" id="InceptionResNetV2"> <label for="InceptionResNetV2">
+				InceptionResNetV2 </label></div>
+			<div><input type="checkbox" id="DenseNet121"> <label for="DenseNet121"> DenseNet121 </label></div>
+			<div><input type="checkbox" id="DenseNet169"> <label for="DenseNet169"> DenseNet169 </label></div>
+			<div><input type="checkbox" id="DenseNet201"> <label for="DenseNet201"> DenseNet201 </label></div>
+			<div><input type="checkbox" id="NASNetLarge"> <label for="NASNetLarge"> NASNetLarge </label></div>
+			<div><input type="checkbox" id="NASNetMobile"> <label for="NASNetMobile"> NASNetMobile </label></div>
+			<div><input type="checkbox" id="MobileNet"> <label for="MobileNet"> MobileNet </label></div>
+			<div><input type="checkbox" id="MobileNetV2"> <label for="MobileNetV2"> MobileNetV2 </label></div>
+		</div>
+		<div class="secondary_block additional_parameters_container">
+			<div class="additional_parameters" id="mobilenet_params">
+				<div class="input_block">
+					<label for="mobilenet_alpha">MobileNet &alpha;: </label>
+					<input type="number" step=".01" name="mobilenet_alpha" id="mobilenet_alpha"
+					       placeholder="Leave blank for default">
+				</div>
+				
+				<div class="input_block">
+					<label for="mobilenet_depth_multiplier">MobileNet depth multiplier: </label>
+					<input type="number" step="1" name="mobilenet_depth_multiplier" id="mobilenet_depth_multiplier"
+					       placeholder="Leave blank for default">
+				</div>
+				
+				<div class="input_block">
+					<label for="mobilenet_dropout">MobileNet dropout: </label>
+					<input type="number" step=".01" name="mobilenet_dropout" id="mobilenet_dropout"
+					       placeholder="Leave blank for default">
+				</div>
+			</div>
+			
+			<div class="additional_parameters" id="mobilenetv2_params">
+				<div class="input_block">
+					<label for="mobilenetv2_alpha">MobileNetV2 &alpha;: </label>
+					<input type="number" step=".01" name="mobilenetv2_alpha" id="mobilenetv2_alpha"
+					       placeholder="Leave blank for default">
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="method_selection" class="main_block">
+		<div class="secondary_block">
+			<div class="input_block">
+				<label for="method">Visualization method: </label>
+				<select name="method" id="method" required>
+					<option value="" selected> Select visualization method</option>
+					
+					<!-- <option value="input"> input</option> unnecessary in our tool -->
+					<!-- <option value="random"> random</option> unnecessary in our tool-->
+					
+					<!-- methods visualizing function -->
+					<option value="gradient"> Gradient / Saliency</option>
+					<!-- <option value="gradient.baseline"> gradient.baseline</option> mainly for debugging purposes -->
+					<option value="smoothgrad"> SmoothGrad (no lambda layers)</option>
+					
+					<!-- methods visualizing signal -->
+					<option value="deconvnet"> DeconvNet</option>
+					<option value="guided_backprop"> Guided Backpropagation</option>
+					<option value="pattern.net"> PatternNet</option>
+					
+					<!-- methods visualizing class-discriminative regions -->
+					<option value="gradcam"> GradCAM</option>
+					<option value="guided_gradcam"> Guided GradCAM</option>
+					
+					<!-- methods visualizing attributions -->
+					<option value="input_t_gradient"> Input * Gradient</option>
+					<option value="integrated_gradients"> Integrated Gradients (no lambda layers)</option>
+					<option value="lrp"> LRP</option>
+					<option value="lrp.z"> LRP-z</option>
+					<option value="lrp.z_IB"> LRP-z - IgnoreBias</option>
+					<option value="lrp.epsilon"> LRP-&epsilon;</option>
+					<option value="lrp.epsilon_IB"> LRP-&epsilon; - IgnoreBias</option>
+					<option value="lrp.w_square"> LRP-wSquare</option>
+					<option value="lrp.flat"> LRP-Flat</option>
+					<option value="lrp.alpha_beta"> LRP-&alpha;&beta;</option>
+					<option value="lrp.alpha_2_beta_1"> LRP-&alpha;2&beta;1</option>
+					<option value="lrp.alpha_2_beta_1_IB"> LRP-&alpha;2&beta;1 - IgnoreBias</option>
+					<option value="lrp.alpha_1_beta_0"> LRP-&alpha;1&beta;0</option>
+					<option value="lrp.alpha_1_beta_0_IB"> LRP-&alpha;1&beta;0 - IgnoreBias</option>
+					<option value="lrp.z_plus"> LRP-z+</option>
+					<option value="lrp.z_plus_fast"> LRP-z+ Fast</option>
+					<option value="lrp.sequential_preset_a"> LRP Sequential Preset A</option>
+					<option value="lrp.sequential_preset_b"> LRP Sequential Preset B</option>
+					<option value="lrp.sequential_preset_a_flat"> LRP Sequential Preset A Flat</option>
+					<option value="lrp.sequential_preset_b_flat"> LRP Sequential Preset B Flat</option>
+					<option value="deep_taylor"> DeepTaylor</option>
+					<option value="deep_taylor.bounded"> DeepTaylor-Bounded</option>
+					<option value="pattern.attribution"> PatternAttribution</option>
+				</select>
+			</div>
+			
+			<div>
+				<div id="layer_selection">
+					<div class="input_block">
+						<div class="tooltip">
+							<img class="icon" alt="info" src="{{ url_for('static', filename='icons/info.png') }}"/>
+							<span class="tooltiptext">When layers have been loaded from model, start typing layer name, or leave blank for using default layer</span>
+						</div>
+						<label for="layer_name">Layer: </label>
+						<input name="layer_name" id="layer_name" placeholder="Last (SoftMax removed)" disabled>
+					</div>
+					
+					<div>
+						<img class="icon refresh" alt="refresh"
+						     src="{{ url_for('static', filename='icons/refresh.png') }}"/>
+					</div>
+					<div id="layers_loader_spinner" class="lds-roller">
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+					</div>
+				</div>
+				
+				<div id="neuron_selection">
+					<div id="neuron_selection_mode_selection" class="input_block">
+						<label for="neuron_selection_mode">Neuron selection mode: </label>
+						<select name="neuron_selection_mode" id="neuron_selection_mode">
+							<option value="max_activations" selected> Max activations</option>
+							<option value="index"> By index</option>
+						</select>
+					</div>
+					
+					<div id="n_max_activations_selection" class="input_block">
+						<label for="n_max_activations">Number of max activations: </label>
+						<select name="n_max_activations" id="n_max_activations">
+							<option value="1" selected> 1</option>
+							<option value="4"> 4</option>
+							<option value="9"> 9</option>
+							<option value="16"> 16</option>
+						</select>
+					</div>
+					
+					<div id="neuron_index_selection" class="input_block">
+						<label for="neuron_index">Neuron index: </label>
+						<input type="number" step="1" name="neuron_index" id="neuron_index"
+						       placeholder="Insert neuron index">
+					</div>
+				</div>
+				
+				<div id="class_selection">
+					<div class="input_block">
+						<label for="class_id">Class: </label>
+						<select name="class_id" id="class_id" disabled>
+							<option value="-2" selected> Select class to visualize</option>
+							<!-- loaded dynamically -->
+						</select>
+					</div>
+					
+					<div>
+						<img class="icon refresh" alt="refresh"
+						     src="{{ url_for('static', filename='icons/refresh.png') }}"/>
+					</div>
+					<div id="classes_loader_spinner" class="lds-roller">
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+					</div>
+				</div>
+			</div>
+			
+			<div>
+				<button type="button" name="suggest" id="suggest">Suggest input images</button>
+				<button type="button" name="visualize" id="visualize">Visualize</button>
+				
+				<div id="main_spinner" class="lds-roller">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="secondary_block additional_parameters_container">
+			<div class="additional_parameters input_block" id="random">
+				<label for="stddev">Standard deviation: </label>
+				<input type="number" step=".01" name="stddev" id="stddev" placeholder="1">
+			</div>
+			
+			<!-- for gradient and gradient.baseline -->
+			<div class="additional_parameters input_block" id="gradient">
+				<label for="gradient_postprocess">Select postprocess: </label>
+				<select name="gradient_postprocess" id="gradient_postprocess">
+					<option value="abs" selected>Abs</option>
+					<option value="None">None</option>
+					<option value="square">Square</option>
+				</select>
+			</div>
+			
+			<div class="additional_parameters" id="smoothgrad">
+				<div class="input_block">
+					<label for="augment_by_n">Augment by n: </label>
+					<input type="number" name="augment_by_n" id="augment_by_n" placeholder="32">
+				</div>
+				
+				<div class="input_block">
+					<label for="smoothgrad_postprocess">Select postprocess: </label>
+					<select name="smoothgrad_postprocess" id="smoothgrad_postprocess">
+						<option value="abs" selected>Abs</option>
+						<option value="None">None</option>
+						<option value="square">Square</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="additional_parameters" id="integrated_gradients">
+				<div class="input_block">
+					<label for="steps">Steps: </label>
+					<input type="number" name="steps" id="steps" placeholder="32">
+				</div>
+				
+				<div class="input_block">
+					<label for="integrated_gradients_postprocess">Select postprocess: </label>
+					<select name="integrated_gradients_postprocess" id="integrated_gradients_postprocess">
+						<option value="abs" selected>Abs</option>
+						<option value="None">None</option>
+						<option value="square">Square</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="additional_parameters input_block" id="lrp">
+				<label for="rule">Rule: </label>
+				<select name="rule" id="rule">
+					<option value="" selected>Select lrp rule</option>
+					<option value="Z">z</option>
+					<option value="ZIgnoreBias">z - IgnoreBias</option>
+					<option value="Epsilon">&epsilon;</option>
+					<option value="EpsilonIgnoreBias">&epsilon; - IgnoreBias</option>
+					<option value="WSquare">wSquare</option>
+					<option value="Flat">Flat</option>
+					<option value="AlphaBeta">&alpha;&beta;</option>
+					<option value="AlphaBetaIgnoreBias">&alpha;&beta; - IgnoreBias</option>
+					<option value="Alpha2Beta1">&alpha;2&beta;1</option>
+					<option value="Alpha2Beta1IgnoreBias">&alpha;2&beta;1 - IgnoreBias</option>
+					<option value="Alpha1Beta0">&alpha;1&beta;0</option>
+					<option value="Alpha1Beta0IgnoreBias">&alpha;1&beta;0 - IgnoreBias</option>
+					<option value="ZPlus">z+</option>
+					<option value="ZPlusFast">z+ Fast</option>
+					<option value="Bounded">Bounded</option>
+				</select>
+			</div>
+			
+			<div class="additional_parameters" id="lrp_bounded">
+				<div class="input_block">
+					<label for="low">Low bound: </label>
+					<input type="number" name="low" id="low" placeholder="-1"> <!-- todo step=".01" ? -->
+				</div>
+				
+				<div class="input_block">
+					<label for="high">High bound: </label>
+					<input type="number" name="high" id="high" placeholder="1"> <!-- todo step=".01" ? -->
+				</div>
+			</div>
+			
+			<div class="additional_parameters" id="lrp_epsilon">
+				<div class="input_block">
+					<label for="epsilon">&epsilon;: </label>
+					<input type="number" step=".01" name="epsilon" id="epsilon" placeholder="1e-7">
+				</div>
+				
+				<div class="input_block">
+					<label for="lrp_epsilon_bias">Bias: </label>
+					<select name="lrp_epsilon_bias" id="lrp_epsilon_bias">
+						<option value="True" selected>True</option>
+						<option value="False">False</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="additional_parameters" id="lrp_epsilon_IB_sequential_preset_AB">
+				<div class="input_block">
+					<label for="lrp_epsilon_IB_sequential_preset_AB_epsilon">&epsilon;: </label>
+					<input type="number" step=".01" name="lrp_epsilon_IB_sequential_preset_AB_epsilon"
+					       id="lrp_epsilon_IB_sequential_preset_AB_epsilon">
+				</div>
+			</div>
+			
+			<div class="additional_parameters" id="lrp_alpha_beta">
+				<div class="input_block">
+					<label for="alpha">&alpha;: </label>
+					<input type="number" name="alpha" id="alpha" placeholder="Insert &alpha;">
+					<!-- todo step=".01" ? -->
+				</div>
+				
+				<div class="input_block">
+					<label for="beta">&beta;: </label>
+					<input type="number" name="beta" id="beta" placeholder="Insert &beta;"> <!-- todo step=".01" ? -->
+				</div>
+				
+				<div class="input_block">
+					<label for="lrp_alpha_beta_bias">Bias: </label>
+					<select name="lrp_alpha_beta_bias" id="lrp_alpha_beta_bias">
+						<option value="True" selected>True</option>
+						<option value="False">False</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="additional_parameters" id="deep_taylor_bounded">
+				<div class="input_block">
+					<label for="deep_taylor_low">Low bound: </label>
+					<input type="number" name="deep_taylor_low" id="deep_taylor_low" placeholder="Insert low bound">
+					<!-- todo step=".01" ? -->
+				</div>
+				
+				<div class="input_block">
+					<label for="deep_taylor_high">High bound: </label>
+					<input type="number" name="deep_taylor_high" id="deep_taylor_high"
+					       placeholder="Insert high bound">
+					<!-- todo step=".01" ? -->
+				</div>
+			</div>
+			
+			<div class="additional_parameters file_upload" id="pattern">
+				<form id="upload_training_images_form" method="post" enctype="multipart/form-data">
+					<label for="training_images">Load folder containing training images</label>
+					<input name="training_images" id="training_images" type="file"
+					       multiple directory webkitdirectory mozdirectory>
+				</form>
+				
+				<div class="upload_status">
+					<div class="progress" id="upload_training_images_progressbar"></div>
+					<button type="reset" class="ajax_abort" id="upload_training_images_abort">Cancel upload</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- modal used to show images in bins of histograms plotted for suggestions -->
+<div id="suggestion_modal" class="modal">
+	<!-- modal content -->
+	<div id="suggestion_modal_content" class="modal-content">
+		<span id="close_suggestion_modal" class="close">&times;</span>
+	</div>
+</div>
+
+<!-- modal used to load input images' class for input images suggestions -->
+<div id="input_images_class_modal" class="modal">
+	<!-- modal content -->
+	<div class="modal-content">
+		<span id="close_modal" class="close">&times;</span>
+		<p>If loaded images belong to same class, insert it to receive further suggestion about which images to use for visualization: </p>
+		<div id="input_images_class_selection">
+			<div class="input_block">
+				<label for="input_images_class">Class: </label>
+				<select name="input_images_class" id="input_images_class" disabled>
+					<option value="-2" selected> Select class to visualize</option>
+					<!-- loaded dynamically -->
+				</select>
+				
+				<button type="button" name="go" id="go">Go</button>
+			</div>
+			
+			<button type="button" name="not_same_class" id="not_same_class">Images belong to different classes</button>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+        let expand_src = "{{ url_for('static', filename='icons/expand.png') }}",
+            info_src = "{{ url_for('static', filename='icons/info.png') }}",
+	        tip, headerTab = $(".tab"), download_layers_xhr = false;
+
+        // set style for tip used in suggestions' histograms
+        tip = d3.select("body").append("div")
+            .attr("class", "tip")
+            .style("opacity", 0);
+        
+        let layer_selection_div = $("#layer_selection"), layer_name_input = $("#layer_name"), layer_names = [],
+	        layer_selection_enabled = true, neuron_selection_div = $("#neuron_selection"),
+	        neuron_selection_mode_div = $("#neuron_selection_mode_selection"),
+	        neuron_selection_mode_input = $("#neuron_selection_mode"),
+            n_max_activations_div = $("#n_max_activations_selection"),
+	        n_max_activations_input = $("#n_max_activations"),
+            neuron_index_div = $("#neuron_index_selection"), neuron_index_input = $("#neuron_index"),
+            class_selection_div = $("#class_selection"), class_id_input = $("#class_id");
+		
+        layer_selection_div.hide();
+        neuron_selection_div.hide();
+        class_selection_div.hide();
+		
+
+        // lds-roller is the class of the loading spinner, shown only while waiting for visualization to be generated
+		$(".lds-roller").hide();
+        let main_spinner = $("#main_spinner");
+        
+        // open tab home at startup
+        openTab($("#tab_main"), 'main');
+		
+		
+        // ajax loading of input images
+		let images = "", images_input = $('#images'), images_label_text = images_input.siblings("label").text();
+		
+		images_input.change(function () {
+            images = "";
+            
+            ajaxAbortableFileUploadWithProgressListener(
+                images_label_text,
+                "#images",
+                "#upload_images_progressbar",
+                "#upload_images_abort",
+                new FormData($('#upload_images_form')[0]),
+                "{{ url_for('main.upload_images') }}",
+            ).done(function(response) {
+                if (response["status"] === "success") {
+                    images = response["content"];
+                }
+            });
+        });
+
+		
+        // custom/predefined model/s selection
+        let custom_model_button = $("#custom_model_button"), predefined_model_button = $("#predefined_model_button"),
+	        custom_model_selection = $("#custom_model_selection"),
+	        predefined_model_selection = $("#predefined_model_selection"),
+	        custom_n_classes_input = $("#custom_n_classes"),
+	        custom_class_index_input = $("#custom_class_index"), custom_class_index = "",
+	        custom_models_div = $("#custom_models"), custom_models = [],
+	        predefined_models_div = $("#predefined_models"), predefined_models = [],
+	        add_custom_model_button = $("#add_custom_model"),
+            custom_model_label_text = "", custom_class_index_label = custom_class_index_input.siblings("label"),
+	        custom_class_index_label_text = custom_class_index_label.text(),
+	        custom_model_selected = null, custom_class_index_uploading = false, custom_model_divs_counter = 0,
+	        last_custom_model_div, remaining_custom_model_divs, n_remaining_custom_model_divs, checkbox_div,
+	        checkbox_id, method_selection_div = $("#method_selection"), method_input = $("#method"), method = "";
+		
+        custom_model_selection.hide();
+        predefined_model_selection.hide();
+        
+        let mobilenet_params_div = $("#mobilenet_params"), mobilenetv2_params_div = $("#mobilenetv2_params"),
+	        mobilenet_alpha_input = $("#mobilenet_alpha"),
+	        mobilenet_depth_multiplier_input = $("#mobilenet_depth_multiplier"),
+	        mobilenet_dropout_input = $("#mobilenet_dropout"), mobilenetv2_alpha_input = $("#mobilenetv2_alpha");
+		
+        custom_model_button.click(function(){
+            custom_model_selected = true;
+
+            // reset predefined model selection
+            predefined_models_div.find("input:checkbox").prop("checked", false);
+            checkbox_div = predefined_models_div.find("div");
+            checkbox_div.css("background", "white");
+            checkbox_div.css("color", "");
+            predefined_models = [];
+            predefined_model_selection.hide();
+
+            // reset layer and neuron selection, based on chosen visualization method
+            // first, check if download_layers ajax request is pending, if so, abort it
+            if (download_layers_xhr !== false) {
+                download_layers_xhr.abort();
+                download_layers_xhr = false;
+            }
+            
+	        // second, check if layer selection can be enabled or must be disabled (remaining custom model divs > 1), and same for neuron selection by index
+            remaining_custom_model_divs = $(this).parent().siblings("#custom_model_selection").find(".upload_custom_model");
+            n_remaining_custom_model_divs = remaining_custom_model_divs.length;
+            if (n_remaining_custom_model_divs > 1) {
+                layer_selection_enabled = false;
+                layer_selection_div.hide();
+
+                // methods with both layer and neuron selection
+                if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                    method === "guided_backprop" || method === "pattern.net") {
+
+                    neuron_selection_mode_input.val("max_activations");
+                    neuron_selection_mode_div.hide();
+                    neuron_index_input.val("");
+                    neuron_index_div.hide();
+                    n_max_activations_div.show();
+                    neuron_selection_div.show();
+                }
+            }
+            else {
+                layer_selection_enabled = true;
+
+                // methods with both layer and neuron selection
+                if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                    method === "guided_backprop" || method === "pattern.net") {
+
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+
+                    neuron_selection_mode_input.val("max_activations");
+                    neuron_selection_mode_div.show();
+                    neuron_index_input.val("");
+                    neuron_index_div.hide();
+                    n_max_activations_input.val("1");
+                    n_max_activations_div.show();
+                    neuron_selection_div.show();
+                }
+                // all other methods, with only layer selection (and class selection)
+                else if (method !== "") {
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+                }
+            }
+            
+            // reset class selection
+            resetClassLoading(class_id_input,
+                custom_class_index_input, custom_n_classes_input,
+                predefined_model_button, custom_model_button);
+	        
+		    // add first custom model block
+            if (custom_model_divs_counter === 0) {
+                add_custom_model_button.before(fillUploadCustomModel(custom_model_divs_counter, info_src));
+                custom_model_divs_counter++;
+            }
+		    
+		    // show div for custom models insertion
+            custom_model_selection.show();
+
+            // remove possible css for showing input error
+            custom_model_button.removeClass("danger");
+            predefined_model_button.removeClass("danger");
+            predefined_model_selection.removeClass("danger");
+            predefined_model_selection.find(".danger").removeClass("danger");
+
+            // adding css for evidencing user selection
+            predefined_model_button.css("width", "max-content");
+            predefined_model_button.css("background", "white");
+            predefined_model_button.css("color", "");
+            custom_model_button.css("width", "100%");
+            custom_model_button.css("background", "#1569C7");
+            custom_model_button.css("color", "white");
+	    });
+        
+        add_custom_model_button.on("click", function() {
+            // add style for last custom model upload div and show related remove button
+            last_custom_model_div = custom_models_div.children(".upload_custom_model").last();
+            last_custom_model_div.css("border-bottom", "1px solid #1569C7");
+            last_custom_model_div.css("margin-bottom", "0.5rem");
+            last_custom_model_div.find(".remove").show();
+	        
+            // add div for new custom model and show its remove button
+            add_custom_model_button.before(fillUploadCustomModel(custom_model_divs_counter, info_src));
+            custom_models_div.children(".upload_custom_model").last().find(".remove").show();
+            custom_model_divs_counter++;
+	        
+            // check if download_layers ajax request is pending, if so, abort it
+            if (download_layers_xhr !== false) {
+                download_layers_xhr.abort();
+                download_layers_xhr = false;
+            }
+
+            // if user choose to insert more than one model, layer selection is not enabled and neuron selection is fixed to "max_activations"
+            layer_selection_enabled = false;
+            layer_selection_div.hide();
+
+            // methods with both layer and neuron selection
+            if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                method === "guided_backprop" || method === "pattern.net") {
+
+                neuron_selection_mode_input.val("max_activations");
+                neuron_selection_mode_div.hide();
+                neuron_index_input.val("");
+                neuron_index_div.hide();
+                n_max_activations_div.show();
+                neuron_selection_div.show();
+            }
+        });
+		
+        custom_models_div.on("click", ".remove", function () {
+            // read id of custom model div to be removed
+            let custom_model_div_id = $(this)[0].id.split("_")[1];
+	        
+            // if custom model file uploading is in progress in the div to be removed, ask for confirmation
+            if (custom_models[custom_model_div_id] && custom_models[custom_model_div_id].uploading &&
+	            !confirm("Current custom model uploading will be canceled, proceed?")) {
+                return;
+            }
+
+            // abort custom model uploading
+            $(this).parent().find(".ajax_abort").first().click();
+            
+            // delete removed custom models from custom_models array (id in array corresponds of id of the div)
+            custom_models[custom_model_div_id] = null;
+
+            // check remaining custom model divs and reset css if only one remains
+            remaining_custom_model_divs = $(this).parent().siblings(".upload_custom_model");
+            n_remaining_custom_model_divs = remaining_custom_model_divs.length;
+            if (n_remaining_custom_model_divs === 1) {
+                remaining_custom_model_divs.css("border-bottom", "none");
+                remaining_custom_model_divs.find(".remove").hide();
+            }
+
+            // delete custom model div
+            $(this).parent().find(".custom_model").val("");
+            $(this).parent().remove();
+            
+            // if it remains only one custom model div, layer selection can be enabled again and so neuron selection by index
+            if (n_remaining_custom_model_divs === 1) {
+                layer_selection_enabled = true;
+	            
+                // methods with both layer and neuron selection
+                if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                    method === "guided_backprop" || method === "pattern.net") {
+
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+                    
+                    neuron_selection_mode_input.val("max_activations");
+                    neuron_selection_mode_div.show();
+                    neuron_index_input.val("");
+                    neuron_index_div.hide();
+                    n_max_activations_div.show();
+                    neuron_selection_div.show();
+                }
+                // all other methods, with only layer selection (and class selection)
+                else if (method !== "") {
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+                }
+            }
+        });
+		
+        predefined_model_button.click(function(){
+		    // if a custom model was previously selected and a file uploading is in progress ask for confirmation
+			for (let custom_model of custom_models) {
+                if (custom_model && custom_model.uploading || custom_class_index_uploading) {
+                    if (confirm("Current custom class index and custom model/s uploading will be canceled, proceed?")) break;
+                    else return;
+                }
+			}
+
+            // reset custom model inputs
+            custom_models_div.find(".ajax_abort").click();
+            for (let custom_model of custom_models) {
+                if (custom_model) custom_model.uploading = false;
+            }
+            
+            custom_model_selected = false;
+            custom_models_div.children(".upload_custom_model").remove();
+            custom_models = [];
+            custom_model_divs_counter = 0;
+            
+            // reset custom_class_index and also its label
+            $("#upload_custom_class_index_abort").click();
+            custom_class_index = "";
+            custom_class_index_uploading = false;
+            custom_class_index_input.val("");
+            custom_class_index_label.text(custom_class_index_label_text);
+            custom_class_index_label.css("font-weight", "normal");
+            
+            // reset custom_n_classes
+            custom_n_classes_input.val("");
+
+            // reset layer and neuron selection, based on chosen visualization method
+	        // first, check if download_layers ajax request is pending, if so, abort it
+            if (download_layers_xhr !== false) {
+                download_layers_xhr.abort();
+                download_layers_xhr = false;
+            }
+            
+            // second, check if layer selection can be enabled (number of selected predefined models === 1) or must be disabled, and same for neuron selection by index
+            if (predefined_models_div.find("input:checked").length > 1) {
+                layer_selection_enabled = false;
+                layer_selection_div.hide();
+
+                // methods with both layer and neuron selection
+                if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                    method === "guided_backprop" || method === "pattern.net") {
+
+                    neuron_selection_mode_input.val("max_activations");
+                    neuron_selection_mode_div.hide();
+                    neuron_index_input.val("");
+                    neuron_index_div.hide();
+                    n_max_activations_div.show();
+                    neuron_selection_div.show();
+                }
+            }
+            else {
+                layer_selection_enabled = true;
+
+                // methods with both layer and neuron selection
+                if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                    method === "guided_backprop" || method === "pattern.net") {
+
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+
+                    neuron_selection_mode_input.val("max_activations");
+                    neuron_selection_mode_div.show();
+                    neuron_index_input.val("");
+                    neuron_index_div.hide();
+                    n_max_activations_input.val("1");
+                    n_max_activations_div.show();
+                    neuron_selection_div.show();
+                }
+                // all other methods, with only layer selection (and class selection)
+                else if (method !== "") {
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+                }
+            }
+	        
+            // reset class selection
+            resetClassLoading(class_id_input,
+                custom_class_index_input, custom_n_classes_input,
+                predefined_model_button, custom_model_button);
+
+            // hide div for custom models insertion
+            custom_model_selection.hide();
+            // show div for choosing predefined models
+		    predefined_model_selection.show();
+
+            // remove possible css for showing input error
+            custom_model_button.removeClass("danger");
+            predefined_model_button.removeClass("danger");
+            custom_model_selection.removeClass("danger");
+            custom_model_selection.find(".danger").removeClass("danger");
+
+            // adding css for evidencing user selection
+            custom_model_button.css("width", "max-content");
+            custom_model_button.css("background", "white");
+            custom_model_button.css("color", "");
+            predefined_model_button.css("width", "100%");
+            predefined_model_button.css("background", "#1569C7");
+            predefined_model_button.css("color", "white");
+		});
+		
+        // ajax loading of custom model file
+        custom_models_div.on("change", ".custom_model", function () {
+            // read id of custom model div where custom model need to be uploaded
+            let custom_model_div_id = $(this)[0].id.split("_")[2];
+            
+            // save the default label for custom model input
+            if (custom_model_label_text === "") {
+                custom_model_label_text = $("#custom_model_" + custom_model_div_id).siblings("label").text();
+            }
+
+            // create empty entry in the custom_models array for this custom model div
+            custom_models[custom_model_div_id] = {
+                name: "",
+	            means: "",
+	            std_devs: "",
+	            uploading: true,
+            };
+	        
+            // check if download_layers ajax request is pending, if so, abort it
+            if (download_layers_xhr !== false) {
+                download_layers_xhr.abort();
+                download_layers_xhr = false;
+            }
+
+            // reset layer selection (because the custom model is changing, so layers need to be reloaded)
+            layer_name_input.val("");
+            layer_name_input.autocomplete("option", "source", layer_names);
+            layer_name_input.prop("disabled", true);
+	        
+            // load custom model
+            ajaxAbortableFileUploadWithProgressListener(
+                custom_model_label_text,
+                "#custom_model_" + custom_model_div_id,
+                "#upload_custom_model_progressbar_" + custom_model_div_id,
+                "#upload_custom_model_abort_" + custom_model_div_id,
+                new FormData($("#upload_custom_model_form_" + custom_model_div_id)[0]),
+                "{{ url_for('main.upload_custom_model') }}",
+            ).done(function (response) {
+                if (response["status"] === "success") {
+                    custom_models[custom_model_div_id].name = response["content"];
+                    custom_models[custom_model_div_id].uploading = false;
+                }
+                else {
+                    custom_models[custom_model_div_id] = null;
+                }
+            }).error(function() {
+                custom_models[custom_model_div_id] = null;
+            });
+        });
+		
+        // ajax loading of custom class index file
+        custom_class_index_input.change(function () {
+            custom_class_index_uploading = true;
+	        
+            // reset custom_class_index
+            custom_class_index = "";
+
+            // reset class loading (because new class_index has been inserted, so classes need to be reloaded)
+            resetClassLoading(class_id_input,
+                custom_class_index_input, custom_n_classes_input,
+                predefined_model_button, custom_model_button);
+            
+            // load custom_class_index
+            ajaxAbortableFileUploadWithProgressListener(
+                custom_class_index_label_text,
+                "#custom_class_index",
+                "#upload_custom_class_index_progressbar",
+                "#upload_custom_class_index_abort",
+                new FormData($('#upload_custom_class_index_form')[0]),
+                "{{ url_for('main.upload_custom_class_index') }}",
+            ).done(function (response) {
+                if (response["status"] === "success") {
+                    custom_class_index = response["content"];
+                }
+            }).complete(function () {
+                custom_class_index_uploading = false;
+            });
+        });
+		
+        // add dynamic style to predefined models checkboxes
+        predefined_models_div.find("input:checkbox").click(function () {
+            checkbox_div = $(this).parent();
+            checkbox_id = $(this)[0].id;
+
+            if ($(this).prop("checked") === true) {
+                checkbox_div.css("background", "#1569C7");
+                checkbox_div.css("color", "white");
+
+                if (checkbox_id === "MobileNet") {
+                    mobilenet_params_div.show();
+                }
+                else if (checkbox_id === "MobileNetV2") {
+                    mobilenetv2_params_div.show();
+                }
+            }
+            else {
+                checkbox_div.css("background", "white");
+                checkbox_div.css("color", "");
+
+                if (checkbox_id === "MobileNet") {
+                    mobilenet_params_div.hide();
+
+                    // reset inputs
+                    mobilenet_alpha_input.val("");
+                    mobilenet_depth_multiplier_input.val("");
+                    mobilenet_dropout_input.val("");
+                }
+                else if (checkbox_id === "MobileNetV2") {
+                    mobilenetv2_params_div.hide();
+
+                    // reset inputs
+                    mobilenetv2_alpha_input.val("");
+                }
+            }
+
+	        // check if download_layers ajax request is pending, if so, abort it
+            if (download_layers_xhr !== false) {
+                download_layers_xhr.abort();
+                download_layers_xhr = false;
+            }
+
+            // check if layer selection can be enabled (number of selected predefined models === 1) or must be disabled, and same for neuron selection by index
+            if (predefined_models_div.find("input:checked").length > 1) {
+                layer_selection_enabled = false;
+                layer_selection_div.hide();
+
+                // methods with both layer and neuron selection
+                if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                    method === "guided_backprop" || method === "pattern.net") {
+                    
+                    neuron_selection_mode_input.val("max_activations");
+                    neuron_selection_mode_div.hide();
+                    neuron_index_input.val("");
+                    neuron_index_div.hide();
+                    n_max_activations_div.show();
+                    neuron_selection_div.show();
+                }
+            }
+            else {
+                layer_selection_enabled = true;
+	            
+                // methods with both layer and neuron selection
+                if (method.startsWith("gradient") || method === "smoothgrad" || method === "deconvnet" ||
+                    method === "guided_backprop" || method === "pattern.net") {
+                    
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+                    
+                    neuron_selection_mode_input.val("max_activations");
+                    neuron_selection_mode_div.show();
+                    neuron_index_input.val("");
+                    neuron_index_div.hide();
+                    n_max_activations_div.show();
+                    neuron_selection_div.show();
+                }
+                // all other methods, with only layer selection (and class selection)
+                else if (method !== "") {
+                    layer_name_input.val("");
+                    layer_name_input.autocomplete("option", "source", layer_names);
+                    layer_name_input.prop("disabled", true);
+                    layer_selection_div.show();
+                }
+            }
+        });
+
+
+        // layer selection management
+        layer_name_input.autocomplete({
+            source: layer_names
+        });
+
+        layer_selection_div.find(".refresh").click(function () {
+            download_layers_xhr = loadLayers(custom_model_selected,
+	            custom_models, predefined_models_div,
+	            predefined_model_button, custom_model_button,
+                method_input, layer_name_input,
+	            "{{ url_for('main.download_layers') }}");
+
+            if (download_layers_xhr === false) {
+                alert("Model not loaded.");
+            }
+        });
+        
+        
+        // neuron selection management
+		neuron_selection_mode_input.change(function() {
+            neuron_selection_mode_input.closest("div").removeClass("danger");
+            n_max_activations_div.hide();
+            neuron_index_div.hide();
+            
+		    if (neuron_selection_mode_input.val() === "max_activations") {
+                n_max_activations_input.val("1");
+                n_max_activations_div.show();
+		    }
+		    else if (neuron_selection_mode_input.val() === "index") {
+		        neuron_index_input.val("");
+                neuron_index_div.show();
+            }
+		    else {
+                neuron_selection_mode_input.closest("div").addClass("danger");
+		        alert("Invalid neuron selection mode.");
+		    }
+		});
+
+
+		// class selection management
+        class_selection_div.find(".refresh").click(function () {
+            let loaded_classes = loadClasses(custom_model_selected,
+                custom_class_index_input, custom_class_index, custom_n_classes_input,
+                predefined_model_button, custom_model_button,
+                class_id_input, "{{ url_for('main.download_classes') }}");
+
+            if (loaded_classes === false) {
+                alert("Classes not loaded.");
+            }
+        });
+        
+
+        // ajax loading of training images for pattern.net and pattern.attribution visualizations methods
+        let training_images_input = $('#training_images'), training_images = "",
+	        training_images_input_label = training_images_input.siblings("label"),
+	        training_images_input_label_text = training_images_input_label.text();
+        
+        training_images_input.change(function () {
+            training_images = "";
+
+            ajaxAbortableFileUploadWithProgressListener(
+                training_images_input_label_text,
+                "#training_images",
+                "#upload_training_images_progressbar",
+                "#upload_training_images_abort",
+                new FormData($('#upload_training_images_form')[0]),
+                "{{ url_for('main.upload_training_images') }}",
+            ).done(function (response) {
+                if (response["status"] === "success") {
+                    training_images = response["content"];
+                }
+            });
+        });
+
+        
+        // visualization parameters and additional parameters management
+        let stddev_input = $("#stddev"), gradient_postprocess_input = $("#gradient_postprocess"),
+	        augment_by_n_input = $("#augment_by_n"), smoothgrad_postprocess_input = $("#smoothgrad_postprocess"),
+	        steps_input = $("#steps"), integrated_gradients_postprocess_input = $("#integrated_gradients_postprocess"),
+	        lrp_rule_input = $("#rule"), lrp_epsilon_div = $("#lrp_epsilon"),
+	        lrp_epsilon_IB_sequential_preset_AB_div = $("#lrp_epsilon_IB_sequential_preset_AB"),
+	        lrp_alpha_beta_div = $("#lrp_alpha_beta"), lrp_bounded_div = $("#lrp_bounded"),
+	        epsilon_input = $("#epsilon"), lrp_epsilon_bias_input = $("#lrp_epsilon_bias"),
+	        lrp_epsilon_IB_sequential_preset_AB_epsilon_input = $("#lrp_epsilon_IB_sequential_preset_AB_epsilon"),
+	        alpha_input = $("#alpha"), beta_input = $("#beta"), lrp_alpha_beta_bias_input = $("#lrp_alpha_beta_bias"),
+	        low_input = $("#low"), high_input = $("#high"),
+	        deep_taylor_low_input = $("#deep_taylor_low"), deep_taylor_high_input = $("#deep_taylor_high");
+
+        method_input.change(function () {
+            method_selection_div.find(".danger").removeClass("danger");
+            
+            // reset layer selection
+            layer_name_input.val("");
+            layer_name_input.autocomplete("option", "source", layer_names);
+            layer_name_input.attr("placeholder", "Last (SoftMax removed)");
+            layer_selection_div.hide();
+
+            // reset neuron selection
+            neuron_selection_mode_input.val("max_activations");
+            neuron_selection_mode_div.show();
+            neuron_index_input.val("");
+            neuron_index_div.hide();
+            n_max_activations_input.val("1");
+            n_max_activations_div.show();
+            neuron_selection_div.hide();
+
+            // reset class selection
+            resetClassLoading(class_id_input,
+                custom_class_index_input, custom_n_classes_input,
+                predefined_model_button, custom_model_button);
+            class_selection_div.hide();
+            
+            // hide all additional parameters, then reset those to be showed, according to selected visualization method
+            method_selection_div.find(".additional_parameters").hide();
+            
+            method = method_input.val();
+            if (method === "random") {
+                // reset additional parameters input
+                stddev_input.val("");
+
+                // show additional parameters box
+                $("#random").show();
+            }
+            else if (method === "gradient" || method === "gradient.baseline") {
+                // reset additional parameters input
+                gradient_postprocess_input.val("abs");
+	            
+                // show proper additional parameters box
+                $("#gradient").show();
+                
+                // show proper visualization parameters box
+	            if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                    neuron_selection_div.show();
+                }
+	            else {
+                    neuron_selection_mode_div.hide();
+                    neuron_selection_div.show();
+                }
+            }
+            else if (method === "smoothgrad") {
+                // reset additional parameters input
+	            augment_by_n_input.val("");
+                smoothgrad_postprocess_input.val("abs");
+
+                // show proper additional parameters box
+                $("#smoothgrad").show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                    neuron_selection_div.show();
+                }
+                else {
+                    neuron_selection_mode_div.hide();
+                    neuron_selection_div.show();
+                }
+            }
+            else if (method === "deconvnet" || method === "guided_backprop") {
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                    neuron_selection_div.show();
+                }
+                else {
+                    neuron_selection_mode_div.hide();
+                    neuron_selection_div.show();
+                }
+            }
+            else if (method === "pattern.net") {
+                // reset additional parameters inputs
+                training_images = "";
+                training_images_input.val("");
+                training_images_input_label.text(training_images_input_label_text);
+                training_images_input_label.css("font-weight", "normal");
+
+                // show additional parameters box
+                $("#pattern").show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                    neuron_selection_div.show();
+                }
+                else {
+                    neuron_selection_mode_div.hide();
+                    neuron_selection_div.show();
+                }
+            }
+            else if (method === "gradcam" || method === "guided_gradcam") {
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_name_input.attr("placeholder", "Last conv layer");
+                    layer_selection_div.show();
+                }
+                
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method === "integrated_gradients") {
+                // reset additional parameters input
+                steps_input.val("");
+                integrated_gradients_postprocess_input.val("abs");
+
+                // show additional parameters box
+                $("#integrated_gradients").show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                }
+                
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method === "lrp") {
+                // reset additional parameters input
+                lrp_rule_input.val("");
+	            
+                // show additional parameters box
+                $("#lrp").show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                }
+
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method === "lrp.epsilon") {
+                // reset additional parameters input
+                epsilon_input.val("");
+                lrp_epsilon_bias_input.val("True");
+
+                // show additional parameters box
+                lrp_epsilon_div.show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                }
+
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method === "lrp.epsilon_IB" ||
+	            method === "lrp.sequential_preset_a" || method === "lrp.sequential_preset_b") {
+
+                // reset additional parameters input
+                lrp_epsilon_IB_sequential_preset_AB_epsilon_input.val("");
+
+                // set custom placeholder because of different default values
+                if (method === "lrp.epsilon_IB") {
+                    lrp_epsilon_IB_sequential_preset_AB_epsilon_input.prop("placeholder", "1e-7");
+                }
+                else {
+                    lrp_epsilon_IB_sequential_preset_AB_epsilon_input.prop("placeholder", "1e-1");
+                }
+                
+                // show additional parameters box
+                lrp_epsilon_IB_sequential_preset_AB_div.show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                }
+
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method === "lrp.alpha_beta") {
+                // reset additional parameters input
+                alpha_input.val("");
+                beta_input.val("");
+                lrp_alpha_beta_bias_input.val("True");
+                lrp_alpha_beta_bias_input.prop("disabled", false);
+
+                // show additional parameters box
+                lrp_alpha_beta_div.show();
+                lrp_alpha_beta_bias_input.parent().show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                }
+
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method.startsWith("lrp") || method === "input_t_gradient" || method === "deep_taylor") {
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                }
+
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method === "deep_taylor.bounded") {
+                // reset additional parameters input
+                deep_taylor_low_input.val("");
+                deep_taylor_high_input.val("");
+
+                // show parameters box
+                $("#deep_taylor_bounded").show();
+
+                // show proper visualization parameters box
+                if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+                    layer_selection_div.show();
+                }
+
+                loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+            else if (method === "pattern.attribution") {
+                // reset additional parameters inputs
+                training_images = "";
+                training_images_input.val("");
+                training_images_input_label.text(training_images_input_label_text);
+                training_images_input_label.css("font-weight", "normal");
+                
+                // show additional parameters box
+	            $("#pattern").show();
+
+	            // show proper visualization parameters box
+	            if (layer_selection_enabled) {
+                    // check if download_layers ajax request is pending, distinguishing cases when status = 200 (so the flag is different to false but the request is finished) and so layers can be already reloaded again, from the case when the ajax request is actually pending (so flag is different from false and status is not 200) and so the request must be aborted; otherwise layers can be loaded
+                    if (download_layers_xhr !== false) {
+                        if (download_layers_xhr.status === 200) {
+                            download_layers_xhr = loadLayers(custom_model_selected,
+                                custom_models, predefined_models_div,
+                                predefined_model_button, custom_model_button,
+                                method_input, layer_name_input,
+                                "{{ url_for('main.download_layers') }}");
+                        }
+                        else {
+                            download_layers_xhr.abort();
+                            download_layers_xhr = false;
+                        }
+                    } else {
+                        download_layers_xhr = loadLayers(custom_model_selected,
+                            custom_models, predefined_models_div,
+                            predefined_model_button, custom_model_button,
+                            method_input, layer_name_input,
+                            "{{ url_for('main.download_layers') }}");
+                    }
+
+		            layer_selection_div.show();
+		        }
+
+                loadClasses(custom_model_selected,
+	                custom_class_index_input, custom_class_index, custom_n_classes_input,
+	                predefined_model_button, custom_model_button,
+	                class_id_input, "{{ url_for('main.download_classes') }}");
+                class_selection_div.show();
+            }
+        });
+
+        // lrp rule additional parameters management
+        lrp_rule_input.change(function () {
+            // hide all lrp related additional parameters
+            lrp_epsilon_div.hide();
+            lrp_epsilon_IB_sequential_preset_AB_div.hide();
+            lrp_alpha_beta_div.hide();
+            lrp_bounded_div.hide();
+
+            // reset only additional parameters related to the selected lrp rule, that need to be visualized
+            if (lrp_rule_input.val() === "Epsilon") {
+                // reset inputs
+                epsilon_input.val("");
+                lrp_epsilon_bias_input.val("True");
+
+                // show additional parameters box
+                lrp_epsilon_div.show();
+            }
+            else if (lrp_rule_input.val() === "EpsilonIgnoreBias") {
+                // reset inputs
+                lrp_epsilon_IB_sequential_preset_AB_epsilon_input.val("");
+
+                // set custom placeholder for epsilonIB method instead of sequential_preset_AB methods
+                lrp_epsilon_IB_sequential_preset_AB_epsilon_input.prop("placeholder", "1e-7");
+
+                // show additional parameters box
+                lrp_epsilon_IB_sequential_preset_AB_div.show();
+            }
+            else if (lrp_rule_input.val() === "AlphaBeta") {
+                // reset inputs
+                alpha_input.val("");
+                beta_input.val("");
+                lrp_alpha_beta_bias_input.val("True");
+                lrp_alpha_beta_bias_input.prop("disabled", false);
+
+                // show additional parameters box
+                lrp_alpha_beta_div.show();
+                lrp_alpha_beta_bias_input.parent().show();
+            }
+            else if (lrp_rule_input.val() === "AlphaBetaIgnoreBias") {
+                // reset inputs
+                alpha_input.val("");
+                beta_input.val("");
+                lrp_alpha_beta_bias_input.val("False");
+
+                // show additional parameters box
+                lrp_alpha_beta_div.show();
+                lrp_alpha_beta_bias_input.parent().hide();
+            }
+            else if (lrp_rule_input.val() === "Bounded") {
+                // reset inputs
+                low_input.val("");
+                high_input.val("");
+
+                // show additional parameters box
+                lrp_bounded_div.show();
+            }
+        });
+        
+        
+        // ajax request to generate visualization
+        let main_div = $("#main"), visualize_button = $('#visualize'), suggest_button = $("#suggest"),
+	        id_output_container, visible_refresh_icons, visible_file_upload_divs, layer_name_input_disabled,
+	        visible_input_blocks, visible_buttons;
+
+        id_output_container = 0;
+		
+        visualize_button.on("click", function () {
+            // data to send
+            let data = getInputs(
+                "visualization",
+                main_div, images, images_input, custom_model_selected, custom_models_div, custom_n_classes_input,
+	            custom_class_index, custom_class_index_input, custom_model_divs_counter, custom_models,
+	            predefined_models_div, predefined_model_button, custom_model_button, mobilenet_alpha_input,
+	            mobilenet_depth_multiplier_input, mobilenet_dropout_input, mobilenetv2_alpha_input, method_input,
+	            layer_selection_enabled, layer_name_input, neuron_selection_mode_input, n_max_activations_input,
+	            n_max_activations_div, neuron_index_input, neuron_index_div, class_id_input, stddev_input,
+	            gradient_postprocess_input, augment_by_n_input, smoothgrad_postprocess_input, steps_input,
+	            integrated_gradients_postprocess_input, lrp_rule_input, epsilon_input, lrp_epsilon_bias_input,
+	            lrp_epsilon_IB_sequential_preset_AB_epsilon_input, alpha_input, beta_input, lrp_alpha_beta_bias_input,
+	            low_input, high_input, deep_taylor_low_input, deep_taylor_high_input, training_images,
+	            method_selection_div
+            );
+
+            if (data === false) return;
+	        
+            
+            visible_file_upload_divs = [];
+            visible_refresh_icons = [];
+            layer_name_input_disabled = true;
+
+            visible_file_upload_divs = $(".file_upload:visible");
+            visible_refresh_icons = $(".refresh:visible");
+            layer_name_input_disabled = layer_name_input.prop("disabled");
+            visible_input_blocks = $(".input_block:visible").find(":visible");
+            visible_buttons = $("button:visible").not(".tablinks");
+            
+            $.ajax({
+                beforeSend: function () {
+                    beforeSendAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks,
+	                    visible_buttons, visible_refresh_icons, visible_file_upload_divs, predefined_models_div)
+                },
+                type: 'POST',
+                url: "{{ url_for('main.visualize') }}",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                cache: false,
+                processData: false,
+                success: function (response) {
+                    if (response["status"] === "error") {
+                        alert(response["message"]);
+                        return;
+                    }
+	                
+                    let visualizations = response["content"]["visualizations"];
+                    let input_images = response["content"]["input_images"];
+                    let n_visualizations = visualizations.length;
+	                
+                    headerTab.append("<button id='tab_output_container_" +
+                        id_output_container + "' class=\"tablinks\" onclick=\"openTab($(this), 'output_container_" +
+	                    id_output_container + "')\"> Visualize[" + id_output_container + "]</button>");
+
+                    $(".content").append(
+                        buildVisualizations(visualizations, n_visualizations, id_output_container, data, expand_src,
+	                        "{{ url_for('static', filename='input/images/') }}", input_images,
+	                        "{{ url_for('static', filename='output/images/') }}")
+                    );
+	                
+	                // show the first slide for each visualizations in this visualizations's container
+                    showSlides(id_output_container, slideIndex[id_output_container]);
+
+                    // when visualization is ready, go to tab
+                    headerTab.find("#tab_output_container_" + id_output_container).click();
+                    
+                    // update counter for total visualizations' containers in page
+	                id_output_container++;
+                },
+	            error: function(response) {
+                    if (response.getAllResponseHeaders()) {
+                        alert(response["message"]);
+                    }
+	            },
+                complete: function () {
+                    completeAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks, visible_buttons,
+	                    visible_refresh_icons, visible_file_upload_divs, predefined_models_div, layer_name_input,
+	                    layer_name_input_disabled)
+                }
+            });
+        });
+
+		
+        // Get the modal and the <span> element that closes the modal
+        let modal = document.getElementById("input_images_class_modal"),
+	        close_modal = document.getElementById("close_modal"),
+	        suggestion_modal = document.getElementById("suggestion_modal"),
+	        suggestion_modal_content = $("#suggestion_modal_content"),
+	        input_images_class_id_input = $("#input_images_class"), input_images_class_id,
+	        input_images_belong_to_same_class = false, loaded_classes;
+        
+        suggest_button.on("click", function () {
+            // data to send
+            let data = getInputs(
+                "suggestion",
+                main_div, images, images_input, custom_model_selected, custom_models_div, custom_n_classes_input,
+                custom_class_index, custom_class_index_input, custom_model_divs_counter, custom_models,
+                predefined_models_div, predefined_model_button, custom_model_button, mobilenet_alpha_input,
+                mobilenet_depth_multiplier_input, mobilenet_dropout_input, mobilenetv2_alpha_input, method_input,
+                layer_selection_enabled, layer_name_input, neuron_selection_mode_input, n_max_activations_input,
+                n_max_activations_div, neuron_index_input, neuron_index_div, class_id_input, stddev_input,
+                gradient_postprocess_input, augment_by_n_input, smoothgrad_postprocess_input, steps_input,
+                integrated_gradients_postprocess_input, lrp_rule_input, epsilon_input, lrp_epsilon_bias_input,
+                lrp_epsilon_IB_sequential_preset_AB_epsilon_input, alpha_input, beta_input, lrp_alpha_beta_bias_input,
+                low_input, high_input, deep_taylor_low_input, deep_taylor_high_input, training_images, method_selection_div
+            );
+
+            if (data === false) return;
+
+            if (data["n_models"] > 1) {
+                loaded_classes = loadClasses(custom_model_selected,
+                    custom_class_index_input, custom_class_index, custom_n_classes_input,
+                    predefined_model_button, custom_model_button,
+                    input_images_class_id_input, "{{ url_for('main.download_classes') }}", "suggestion");
+
+
+                if (loaded_classes === false) {
+                    alert("Classes not loaded.");
+                }
+                else {
+                    // open the modal
+                    modal.style.display = "block";
+                }
+            }
+            else {
+                input_images_class_id = "";
+                input_images_belong_to_same_class = false;
+
+                data["input_images_belong_to_same_class"] = input_images_belong_to_same_class;
+                data["input_images_class_id"] = input_images_class_id;
+
+                visible_file_upload_divs = [];
+                visible_refresh_icons = [];
+                layer_name_input_disabled = true;
+
+                visible_file_upload_divs = $(".file_upload:visible");
+                visible_refresh_icons = $(".refresh:visible");
+                layer_name_input_disabled = layer_name_input.prop("disabled");
+                visible_input_blocks = $(".input_block:visible").find(":visible");
+                visible_buttons = $("button:visible").not(".tablinks");
+
+                $.ajax({
+                    beforeSend: function () {
+                        beforeSendAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks,
+                            visible_buttons, visible_refresh_icons, visible_file_upload_divs, predefined_models_div)
+                    },
+                    type: 'POST',
+                    url: "{{ url_for('main.suggest') }}",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    cache: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response["status"] === "error") {
+                            alert(response["message"]);
+                            return;
+                        }
+
+                        let suggestions = response["content"];
+                        let n_suggestions = suggestions.length;
+
+                        for (let i = 0; i < n_suggestions; i++) {
+                            headerTab.append("<button id='tab_chart_container_" +
+                                id_output_container + "' class=\"tablinks\" onclick=\"openTab($(this), 'chart_container_" +
+                                id_output_container + "')\"> Suggest[" + id_output_container + "]</button>");
+
+                            $(".content").append(
+                                prepareSvg(id_output_container)
+                            );
+
+                            buildSuggestion(input_images_belong_to_same_class, input_images_class_id,
+                                id_output_container, "{{ url_for('static', filename='input/images/') }}",
+                                data, suggestions[i], tip, suggestion_modal, suggestion_modal_content);
+
+                            // when first suggestion is ready, go to tab
+                            if (i === 0) {
+                                headerTab.find("#tab_chart_container_" + id_output_container).click();
+                            }
+
+                            // update counter for total containers in page
+                            id_output_container++;
+                        }
+                    },
+                    error: function (response) {
+                        if (response.getAllResponseHeaders()) {
+                            alert(response["message"]);
+                        }
+                    },
+                    complete: function () {
+                        completeAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks, visible_buttons,
+                            visible_refresh_icons, visible_file_upload_divs, predefined_models_div, layer_name_input,
+                            layer_name_input_disabled)
+                    }
+                });
+            }
+        });
+        
+        $("#not_same_class").click(function() {
+            input_images_class_id = "";
+            input_images_belong_to_same_class = false;
+
+            modal.style.display = "none";
+
+            // data to send
+            let data = getInputs(
+                "suggestion",
+                main_div, images, images_input, custom_model_selected, custom_models_div, custom_n_classes_input,
+                custom_class_index, custom_class_index_input, custom_model_divs_counter, custom_models,
+                predefined_models_div, predefined_model_button, custom_model_button, mobilenet_alpha_input,
+                mobilenet_depth_multiplier_input, mobilenet_dropout_input, mobilenetv2_alpha_input, method_input,
+                layer_selection_enabled, layer_name_input, neuron_selection_mode_input, n_max_activations_input,
+                n_max_activations_div, neuron_index_input, neuron_index_div, class_id_input, stddev_input,
+                gradient_postprocess_input, augment_by_n_input, smoothgrad_postprocess_input, steps_input,
+                integrated_gradients_postprocess_input, lrp_rule_input, epsilon_input, lrp_epsilon_bias_input,
+                lrp_epsilon_IB_sequential_preset_AB_epsilon_input, alpha_input, beta_input, lrp_alpha_beta_bias_input,
+                low_input, high_input, deep_taylor_low_input, deep_taylor_high_input, training_images,
+                method_selection_div
+            );
+
+            if (data === false) return;
+
+            data["input_images_belong_to_same_class"] = input_images_belong_to_same_class;
+            data["input_images_class_id"] = input_images_class_id;
+	        
+            visible_file_upload_divs = [];
+            visible_refresh_icons = [];
+            layer_name_input_disabled = true;
+            
+            visible_file_upload_divs = $(".file_upload:visible");
+            visible_refresh_icons = $(".refresh:visible");
+            layer_name_input_disabled = layer_name_input.prop("disabled");
+            visible_input_blocks = $(".input_block:visible").find(":visible");
+            visible_buttons = $("button:visible").not(".tablinks");
+	        
+            $.ajax({
+                beforeSend: function () {
+                    beforeSendAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks,
+	                    visible_buttons, visible_refresh_icons, visible_file_upload_divs, predefined_models_div)
+                },
+                type: 'POST',
+                url: "{{ url_for('main.suggest') }}",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                cache: false,
+                processData: false,
+                success: function (response) {
+                    if (response["status"] === "error") {
+                        alert(response["message"]);
+                        return;
+                    }
+
+                    let suggestions = response["content"];
+                    let n_suggestions = suggestions.length;
+	                
+                    for (let i = 0; i < n_suggestions; i++) {
+                        headerTab.append("<button id='tab_chart_container_" +
+                            id_output_container + "' class=\"tablinks\" onclick=\"openTab($(this), 'chart_container_" +
+	                        id_output_container + "')\"> Suggest[" + id_output_container + "]</button>");
+
+                        $(".content").append(
+                            prepareSvg(id_output_container)
+                        );
+
+                        buildSuggestion(input_images_belong_to_same_class, input_images_class_id,
+                            id_output_container, "{{ url_for('static', filename='input/images/') }}",
+                            data, suggestions[i], tip, suggestion_modal, suggestion_modal_content);
+
+                        // when first suggestion is ready, go to tab
+                        if (i === 0) {
+                            headerTab.find("#tab_chart_container_" + id_output_container).click();
+                        }
+
+                        // update counter for total containers in page
+                        id_output_container++;
+	                }
+                },
+                error: function (response) {
+                    if (response.getAllResponseHeaders()) {
+                        alert(response["message"]);
+                    }
+                },
+                complete: function () {
+                    completeAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks, visible_buttons,
+	                    visible_refresh_icons, visible_file_upload_divs, predefined_models_div, layer_name_input,
+	                    layer_name_input_disabled)
+                }
+            });
+        });
+        
+        $("#go").click(function() {
+            input_images_class_id = input_images_class_id_input.val();
+            if (parseInt(input_images_class_id) === -2) {
+                alert("Class not selected.");
+                return;
+            }
+            
+            input_images_belong_to_same_class = true;
+
+            modal.style.display = "none";
+
+            // data to send
+            let data = getInputs(
+                "suggestion",
+                main_div, images, images_input, custom_model_selected, custom_models_div, custom_n_classes_input,
+                custom_class_index, custom_class_index_input, custom_model_divs_counter, custom_models,
+                predefined_models_div, predefined_model_button, custom_model_button, mobilenet_alpha_input,
+                mobilenet_depth_multiplier_input, mobilenet_dropout_input, mobilenetv2_alpha_input, method_input,
+                layer_selection_enabled, layer_name_input, neuron_selection_mode_input, n_max_activations_input,
+                n_max_activations_div, neuron_index_input, neuron_index_div, class_id_input, stddev_input,
+                gradient_postprocess_input, augment_by_n_input, smoothgrad_postprocess_input, steps_input,
+                integrated_gradients_postprocess_input, lrp_rule_input, epsilon_input, lrp_epsilon_bias_input,
+                lrp_epsilon_IB_sequential_preset_AB_epsilon_input, alpha_input, beta_input, lrp_alpha_beta_bias_input,
+                low_input, high_input, deep_taylor_low_input, deep_taylor_high_input, training_images,
+                method_selection_div
+            );
+            
+            if (data === false) return;
+
+            data["input_images_belong_to_same_class"] = input_images_belong_to_same_class;
+            data["input_images_class_id"] = input_images_class_id;
+            
+            visible_file_upload_divs = [];
+            visible_refresh_icons = [];
+            layer_name_input_disabled = true;
+
+            visible_file_upload_divs = $(".file_upload:visible");
+            visible_refresh_icons = $(".refresh:visible");
+            layer_name_input_disabled = layer_name_input.prop("disabled");
+            visible_input_blocks = $(".input_block:visible").find(":visible");
+            visible_buttons = $("button:visible").not(".tablinks");
+	        
+            $.ajax({
+                beforeSend: function () {
+                    beforeSendAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks,
+	                    visible_buttons, visible_refresh_icons, visible_file_upload_divs, predefined_models_div)
+                },
+                type: 'POST',
+                url: "{{ url_for('main.suggest') }}",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                cache: false,
+                processData: false,
+                success: function (response) {
+                    if (response["status"] === "error") {
+                        alert(response["message"]);
+                        return;
+                    }
+
+                    let suggestions = response["content"];
+                    let n_suggestions = suggestions.length;
+	                
+                    for (let i = 0; i < n_suggestions; i++) {
+                        headerTab.append("<button id='tab_chart_container_" +
+                            id_output_container + "' class=\"tablinks\" onclick=\"openTab($(this), 'chart_container_" +
+	                        id_output_container + "')\"> Suggest[" + id_output_container + "]</button>");
+
+                        $(".content").append(
+                            prepareSvg(id_output_container)
+                        );
+      
+						buildSuggestion(input_images_belong_to_same_class, input_images_class_id,
+								id_output_container, "{{ url_for('static', filename='input/images/') }}",
+								data, suggestions[i], tip, suggestion_modal, suggestion_modal_content);
+
+                        // when first suggestion is ready, go to tab
+                        if (i === 0) {
+                            headerTab.find("#tab_chart_container_" + id_output_container).click();
+                        }
+
+                        // update counter for total containers in page
+                        id_output_container++;
+                    }
+                },
+                error: function (response) {
+                    if (response.getAllResponseHeaders()) {
+                        alert(response["message"]);
+                    }
+                },
+                complete: function () {
+                    completeAjax(suggest_button, visualize_button, main_spinner, visible_input_blocks, visible_buttons,
+	                    visible_refresh_icons, visible_file_upload_divs, predefined_models_div, layer_name_input,
+	                    layer_name_input_disabled)
+                }
+            });
+        });
+
+        // When the user clicks on <span> (x), close the modal
+        close_modal.onclick = function () {
+            modal.style.display = "none";
+        };
+
+        $("#suggestion_modal").on("click", "#close_suggestion_modal", function () {
+            suggestion_modal.style.display = "none";
+        });
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+            
+            if (event.target === suggestion_modal) {
+                suggestion_modal.style.display = "none";
+            }
+        };
+        
+        let body = $("body");
+        
+        // when close icon is clicked inside a visualization/suggestion, that visualization/suggestion is removed from page (and so the tab from headerTab)
+        body.on("click", ".close_container", function() {
+            let container_id = $(this).closest(".output_container")[0].id;
+            
+            headerTab.find("#tab_" + container_id).remove();
+            $(this).closest(".output_container").remove();
+            openTab($("#tab_main"), 'main');
+        });
+
+        
+        // toggle expansion or reduction of input_images inside a visualization (for enhancing comparisons between different visualizations)
+        body.on("click", ".image", function() {
+		    // check if user click on input image (and not on an output visualization image)
+		    if ($(this).parents(".general_info").length > 0) {
+		        $(this).parents(".images_container").hide();
+		        $(this).parents(".images_container").siblings(".expand_input_images").show();
+		    }
+		});
+
+        body.on("click", ".expand_input_images", function () {
+            $(this).hide();
+            $(this).siblings(".images_container").show();
+        });
+	});
+</script>
+
+{% endblock %}

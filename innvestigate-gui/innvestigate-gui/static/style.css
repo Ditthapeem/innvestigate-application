@@ -1,0 +1,877 @@
+/* progress bar */
+.progress {
+    display: block;
+    text-align: center;
+    width: 0;
+    height: 3px;
+    background: #1569C7;
+    transition: width .3s;
+    border-radius: 3px;
+}
+
+.progress.hide {
+    opacity: 0;
+    transition: opacity 1.3s;
+}
+
+
+/* tooltips */
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .icon {
+    padding: 0 1rem 0 0;
+    cursor: auto;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -110px;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/* loader while downloading layers/classes */
+.lds-roller {
+    display: inline-block;
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.lds-roller div {
+    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    transform-origin: 16px 16px;
+}
+
+.lds-roller div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #1569C7;
+    margin: -1.5px 0 0 -1.5px;
+}
+
+.lds-roller div:nth-child(1) {
+    animation-delay: -0.036s;
+}
+
+.lds-roller div:nth-child(1):after {
+    top: 25px;
+    left: 25px;
+}
+
+.lds-roller div:nth-child(2) {
+    animation-delay: -0.072s;
+}
+
+.lds-roller div:nth-child(2):after {
+    top: 27px;
+    left: 22.5px;
+}
+
+.lds-roller div:nth-child(3) {
+    animation-delay: -0.108s;
+}
+
+.lds-roller div:nth-child(3):after {
+    top: 28.5px;
+    left: 19.5px;
+}
+
+.lds-roller div:nth-child(4) {
+    animation-delay: -0.144s;
+}
+
+.lds-roller div:nth-child(4):after {
+    top: 29px;
+    left: 16px;
+}
+
+.lds-roller div:nth-child(5) {
+    animation-delay: -0.18s;
+}
+
+.lds-roller div:nth-child(5):after {
+    top: 28.5px;
+    left: 12.5px;
+}
+
+.lds-roller div:nth-child(6) {
+    animation-delay: -0.216s;
+}
+
+.lds-roller div:nth-child(6):after {
+    top: 27px;
+    left: 9.5px;
+}
+
+.lds-roller div:nth-child(7) {
+    animation-delay: -0.252s;
+}
+
+.lds-roller div:nth-child(7):after {
+    top: 25px;
+    left: 7px;
+}
+
+.lds-roller div:nth-child(8) {
+    animation-delay: -0.288s;
+}
+
+.lds-roller div:nth-child(8):after {
+    top: 22.5px;
+    left: 5px;
+}
+
+/* loader while generating visualization */
+#main_spinner {
+    display: inline-block;
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+#main_spinner div {
+    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    transform-origin: 32px 32px;
+}
+
+#main_spinner div:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #1569C7;
+    margin: -3px 0 0 -3px;
+}
+
+#main_spinner div:nth-child(1) {
+    animation-delay: -0.036s;
+}
+
+#main_spinner div:nth-child(1):after {
+    top: 50px;
+    left: 50px;
+}
+
+#main_spinner div:nth-child(2) {
+    animation-delay: -0.072s;
+}
+
+#main_spinner div:nth-child(2):after {
+    top: 54px;
+    left: 45px;
+}
+
+#main_spinner div:nth-child(3) {
+    animation-delay: -0.108s;
+}
+
+#main_spinner div:nth-child(3):after {
+    top: 57px;
+    left: 39px;
+}
+
+#main_spinner div:nth-child(4) {
+    animation-delay: -0.144s;
+}
+
+#main_spinner div:nth-child(4):after {
+    top: 58px;
+    left: 32px;
+}
+
+#main_spinner div:nth-child(5) {
+    animation-delay: -0.18s;
+}
+
+#main_spinner div:nth-child(5):after {
+    top: 57px;
+    left: 25px;
+}
+
+#main_spinner div:nth-child(6) {
+    animation-delay: -0.216s;
+}
+
+#main_spinner div:nth-child(6):after {
+    top: 54px;
+    left: 19px;
+}
+
+#main_spinner div:nth-child(7) {
+    animation-delay: -0.252s;
+}
+
+#main_spinner div:nth-child(7):after {
+    top: 50px;
+    left: 14px;
+}
+
+#main_spinner div:nth-child(8) {
+    animation-delay: -0.288s;
+}
+
+#main_spinner div:nth-child(8):after {
+    top: 45px;
+    left: 10px;
+}
+
+@keyframes lds-roller {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* main */
+html {
+    font-family: monospace;
+    background: #eee;
+    padding: 1rem;
+}
+
+body {
+    margin: 0 auto;
+    max-width: 1000px;
+    min-width: 630px;
+}
+
+h1 {
+    color: #1569C7;
+    margin: 1rem 0;
+}
+
+header {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+}
+
+header h1 {
+    flex: auto;
+    margin: 1rem 0 0.25rem 0;
+}
+
+form {
+    display: flex;
+    cursor: pointer;
+    height: min-content;
+    width: 100%;
+}
+
+select {
+    background: none;
+    padding: 0.5rem;
+    border: 1px solid white;
+    border-bottom: 1px solid lightgray;
+    max-width: 500px;
+}
+
+select:focus {
+    outline: none;
+    border: 1px solid lightgray;
+}
+
+input {
+    background: none;
+    padding: 0.5rem;
+    border: 1px solid white;
+    border-bottom: 1px solid lightgray;
+    max-width: 500px;
+}
+
+input:focus {
+    outline: none;
+    border: 1px solid lightgray;
+}
+
+.danger {
+    color: #F62817 !important;
+}
+
+button {
+    background: white;
+    padding: 1rem;
+    border: 1px solid #1569C7;
+}
+
+button:hover {
+    background: #1569C7 !important;
+    color: white !important;
+}
+
+button:focus {
+    outline: none;
+}
+
+.content {
+    padding: 0 1rem 1rem;
+}
+
+.main_view {
+    padding: 1rem 2rem;
+    background: white;
+}
+
+.main_block {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.file_upload input {
+    opacity: 0;
+    height: 0;
+    width: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.file_upload label {
+    padding: 1rem;
+    cursor: inherit;
+    width: 100%;
+}
+
+.file_upload {
+    text-align: center;
+    border: 1px dashed gainsboro;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+}
+
+.ajax_abort {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    display: none;
+}
+
+.input_block {
+    margin: 1rem 0;
+}
+
+.input_block input {
+    width: min-content;
+}
+
+.input_block select {
+    width: min-content;
+}
+
+.additional_parameters {
+    display: none;
+}
+
+.additional_parameters.file_upload {
+    margin: 1rem 0;
+}
+
+.additional_parameters_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 40%;
+}
+
+#model_selection button {
+    width: 50%;
+    white-space: nowrap;
+}
+
+#model_selection button:first-child {
+    margin-right: 1rem;
+}
+
+
+#predefined_model_selection {
+    margin: 0;
+    padding: 0.5rem;
+    border-right: 1px solid #1569C7;
+    border-bottom: 1px solid #1569C7;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: baseline;
+}
+
+#predefined_model_selection .additional_parameters_container {
+    margin-left: 2rem;
+}
+
+#predefined_models {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+#predefined_models div {
+    background: white;
+    margin: 0.1rem;
+    border: 1px solid #1569C7;
+}
+
+#predefined_models div:hover {
+    background: #1569C7 !important;
+    color: white !important;
+}
+
+#predefined_models input {
+    display: none;
+}
+
+#predefined_models label {
+    padding: 0.5rem;
+    display: block;
+}
+
+#custom_model_selection {
+    margin: 0;
+    padding: 0.5rem;
+    border-left: 1px solid #1569C7;
+    border-bottom: 1px solid #1569C7;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.remove {
+    display: none;
+    margin-bottom: 0.5rem;
+}
+
+.preprocessing {
+    padding: 0 1rem;
+}
+
+.preprocessing .input_block {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.preprocessing .input_block input {
+    width: 10%;
+    margin-left: 1rem;
+}
+
+#custom_models {
+    display: flex;
+    flex-direction: column;
+    max-width: 59%;
+}
+
+#custom_models > p {
+    padding: 0 1rem 1rem;
+    font-style: italic;
+}
+
+#classification {
+    max-width: 39%;
+    height: min-content;
+    margin-left: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid lightgray !important;
+}
+
+#classification .input_block {
+    margin-top: 0;
+}
+
+#layer_selection {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+#layer_selection .input_block {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+}
+
+#class_selection {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+}
+
+#class_selection .input_block {
+    margin-top: 0;
+}
+
+.refresh {
+    margin-left: 0.5rem;
+    height: 1.5rem !important;
+    width: 1.5rem !important;
+}
+
+#visualize, #suggest {
+    height: 66px;
+}
+
+:disabled {
+    color: darkgrey !important;
+    background: white !important;
+}
+
+:disabled:hover {
+    color: darkgrey !important;
+    background: white !important;
+}
+
+.right ul {
+    padding-left: 1.5rem;
+}
+
+.predictions_container {
+    padding-top: 0.5rem;
+}
+
+.expand_input_images {
+    display: none;
+    padding: 0 !important;
+    margin: 2rem 2rem 0;
+}
+
+.reduced {
+    padding-left: 1rem;
+}
+
+.icon_container {
+    position: absolute;
+    top: 0.2rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: row;
+}
+
+.icon {
+    height: 2rem;
+    width: 2rem;
+    padding: 0.8rem 0.2rem 0.2rem;
+    cursor: pointer;
+}
+
+.output_container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.general_info {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+}
+
+.visualizations {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.visualization {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    border-top: 1px solid #1569C7;
+}
+
+.suggestion {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+}
+
+.title {
+    font-size: x-large;
+    font-weight: bolder;
+    color: #1569C7;
+}
+
+/* left part of visualization */
+.left > * {
+    box-sizing: border-box;
+}
+
+.left {
+    width: auto;
+}
+
+/* Position the image container (needed to position the left and right arrows) */
+.images_container {
+    width: 450px;
+    position: relative;
+}
+
+/* Hide the images by default */
+.mySlides {
+    display: none;
+}
+
+.image {
+    width: 86%;
+    padding: 6% 4% 0;
+}
+
+.general_info .image, .suggestion .image {
+    width: 75%;
+    padding: 7% 12% 5%;
+}
+
+.general_info .column > img, .suggestion .column > img {
+    width: 90%;
+}
+
+/* Add a pointer when hovering over the thumbnail images */
+.cursor {
+    cursor: pointer;
+}
+
+/* Next & previous buttons */
+.prev,
+.next {
+    cursor: pointer;
+    position: absolute;
+    top: 40%;
+    width: auto;
+    padding: 16px;
+    margin-top: -50px;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+    color: black;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 0;
+}
+
+.row::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Six columns side by side */
+.column {
+    float: left;
+    width: 16.66%;
+}
+
+/* Add a transparency effect for thumnbail images */
+.demo {
+    opacity: 0.3;
+}
+
+.active,
+.demo:hover {
+    opacity: 1;
+}
+
+.column > img {
+    width: 100%;
+}
+
+
+/* right part of visualization */
+.right {
+    width: 20%;
+    flex: auto;
+    margin-left: 1rem;
+    overflow-wrap: break-word;
+    overflow: hidden;
+}
+
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    max-width: 600px; /* Could be more or less, depending on screen size */
+    border-radius: 5px;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* svg styles and more about suggestions */
+.chart .left {
+    width: auto;
+}
+
+#suggestion_modal_content {
+    max-width: 900px;
+}
+
+#suggestion_modal_content .output_container {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+rect, circle {
+    fill: #a1c3e8;
+    cursor: pointer;
+}
+
+rect:hover, circle:hover {
+    fill: #1569C7;
+}
+
+div.tip {
+    position: absolute;
+    text-align: center;
+    max-width: 500px;
+    padding: 0.5rem 1rem;
+    background-color: #555;
+    color: #fff;
+    border: 0;
+    border-radius: 6px;
+    pointer-events: none;
+}
+
+.image_tip {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid lightgray;
+    background-color: white;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 1rem;
+    transition: 0.3s;
+    margin-right: 2px;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #1569C7;
+    color: white;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    border: 1px solid lightgray;
+    border-top: none;
+}

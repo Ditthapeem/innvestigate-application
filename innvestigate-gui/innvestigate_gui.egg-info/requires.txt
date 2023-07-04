@@ -1,0 +1,8 @@
+flask
+Flask
+Flask-Uploads
+numpy
+innvestigate
+matplotlib
+scipy
+opencv-python

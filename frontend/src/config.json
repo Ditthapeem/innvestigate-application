@@ -1,0 +1,14 @@
+{
+    "COLOR": {
+        "BLACK": "#2F3337",
+        "GRAY": "#e6e6e6",
+        "GRAY_LIGHT": "#f5f5f5",
+        "GREEN": "#03A96B",
+        "YELLOW": "#FFC72C",
+        "YELLOW_LIGHT": "#fcf8e3",
+        "RED": "#CD001A"
+        },
+    "API": {
+        "UPLOAD_IMAGE": "http://127.0.0.1:5000/upload_images"
+        }
+}

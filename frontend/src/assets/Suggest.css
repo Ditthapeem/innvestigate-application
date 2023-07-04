@@ -1,0 +1,74 @@
+.information {
+    position: fixed;
+    width: 25%;
+    left: 0;
+    top: 0;
+    height: 100%;
+    margin-top: 90px;
+    background-color: var(--gray);
+    text-align: left;
+}
+
+.information p{
+    padding: 10px;
+}
+
+.image-colum {
+    margin: 30%;
+    margin-top: 100px;
+    width: 30%;
+    height: 100vh;
+    text-align: center;
+}
+
+.model-button-group{
+    margin: 20px;
+}
+
+.model-button-group button{
+    color: black;
+    background: white;
+    font-size: 16px;
+}
+
+.model-button-group button:hover {
+    opacity: 60%;
+}
+
+.information button{
+    display: block;
+    margin: auto;
+    height: 50px;
+    width: 150px;
+}
+
+.information button:hover {
+    opacity: 60%;
+}
+
+.input-image {
+    background-color: var(--gray);
+    padding: 10px;
+    margin: 10px;
+}
+.input-image li{
+    text-align: left;
+}
+
+.input-image:hover + .output-image {
+    display: block;
+    width: 30%;
+    text-align: center;
+}
+
+.output-image {
+    display: none;
+    position: fixed;
+    top: 100px;
+    margin-left: 35%;
+}
+
+.output-image img{
+    width: 100%;
+    margin: auto;
+}
