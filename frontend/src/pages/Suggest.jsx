@@ -75,6 +75,7 @@ const Suggest = () => {
     function GenerateChart(){
         let data = suggest.layer_mean_activations
         let lowerBound = findLowerBound(Math.floor(data[data.length - 1])) 
+        let range = findRange(data[0], data[data.length - 1])
         let highestNumber = data[0]
         let bar = 1
         let index = 0
@@ -82,10 +83,10 @@ const Suggest = () => {
         console.log("boung", (lowerBound*100)/50)
         console.log("range", findRange(0));
 
-        for (let i = lowerBound; i < highestNumber+50; i += 50) {
+        for (let i = lowerBound; i < highestNumber+range; i += range) {
             let count = 0
             data.forEach(element => {
-                if(element > i && element < i+50){
+                if(element > i && element < i+range){
                     count +=1
                 }
             })
@@ -139,12 +140,24 @@ const Suggest = () => {
         return lowerBound;
     }
 
-    function findRange(number) {
-        if (number >= 1) {
-            const lowerBound = Math.floor(number / 10) * 10;
-            return lowerBound / 10;
+    function roundToNearestPowerOf10(number) {
+        if (number < 0) {
+            number = Math.abs(number);
+        }
+        if (number === 0) {
+            return 0.5;
+        }
+
+        const power = Math.floor(Math.log10(number));
+            return 10 ** power;
+        }
+
+    function findRange(max, min) {
+        const diff = max - min;
+        if (roundToNearestPowerOf10(diff) !== 1) {
+            return Math.floor(roundToNearestPowerOf10(diff) / 2);
         } else {
-          return Math.floor(number * 10) / 10;
+            return 0.5;
         }
     }
 
