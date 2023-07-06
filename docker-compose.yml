@@ -8,8 +8,6 @@ services:
       - '8000:5000'
     volumes:
       - ./innvestigate-gui:/innvestigate-gui
-    depends_on:
-      - frontend
   frontend:
     build:
       context: ./frontend
