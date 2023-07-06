@@ -7,17 +7,11 @@ WORKDIR /frontend
 # Copy the package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy the frontend code
+# Copy the rest of the frontend code
 COPY . .
 
-# Build the frontend
-RUN npm run build
-
 EXPOSE 3000
-
-ENV PORT 3000
 
 CMD ["npm", "start"]
