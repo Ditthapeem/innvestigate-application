@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from flask import (
     Flask, Blueprint, render_template, request, jsonify, send_file
 )
@@ -41,7 +42,7 @@ mplib.use('agg')
 
 bp = Blueprint('main', __name__)
 CORS(bp)
-CORS(bp, origins="http://localhost:3000/*")
+CORS(bp, origins="*")
 
 images_UploadSet = flask_uploads.UploadSet('images', flask_uploads.IMAGES)
 models_UploadSet = flask_uploads.UploadSet('models', 'h5')
