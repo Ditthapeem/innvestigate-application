@@ -72,7 +72,7 @@ const Home = () => {
         const fetchData = async (e) => {
         try {
             const temp_dict = {}
-            const url = 'http://127.0.0.1:5000/download_classes'
+            const url = `${configData.API.PATH}download_classes`
             const jsonForm = {
                 'custom_model_selected': false,
                 'custom_class_index': '',
@@ -99,7 +99,7 @@ const Home = () => {
     }, []);
 
     async function handleDownLoadLayesApi(models) {
-        const url = 'http://127.0.0.1:5000/download_layers'
+        const url = `${configData.API.PATH}download_layers`
         const jsonForm = {
             'custom_model_selected': false,
             'model_name': models,
@@ -619,7 +619,7 @@ const Home = () => {
         }
 
         const handleUploadApi = async(e) => {
-            const url = 'http://127.0.0.1:5000/upload_images'
+            const url = `${configData.API.PATH}upload_images`
             const formData = new FormData()
             image.forEach((file, index) => {
                 formData.append(`images`, file);

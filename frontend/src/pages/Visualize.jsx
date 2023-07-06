@@ -19,7 +19,7 @@ const Visualize = () => {
     let [showSelect, setShowSelect] = useState(false)
 
     const visualizeApi = async(e) => {
-        const url = "http://127.0.0.1:5000/visualize"
+        const url = `${configData.API.PATH}visualize`
         await axios.post(url, JSON.stringify(data), {
                     headers: {
                         'Content-Type': 'application/json'

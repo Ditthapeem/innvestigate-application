@@ -60,7 +60,7 @@ const Suggest = () => {
     }
 
     const suggestApi = async(e) => {
-        const url = "http://127.0.0.1:5000/suggest"
+        const url = `${configData.API.PATH}suggest`
         await axios.post(url, JSON.stringify(data), {
                     headers: {
                         'Content-Type': 'application/json'
