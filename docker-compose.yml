@@ -1,0 +1,22 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./innvestigate-gui
+      dockerfile: Dockerfile
+    ports:
+      - '8000:5000'
+    volumes:
+      - ./innvestigate-gui:/innvestigate-gui
+    depends_on:
+      - frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/frontend
+    depends_on:
+      - backend
