@@ -6,12 +6,16 @@ The iNNvestigate-application is focused on compares the results of each visuliza
 
 # Getting Started
 ## Cloning project   
-```git clone https://github.com/HuskyIsHere/innvestigate-application.git```       
-```cd innvestigate-application```   
+    git clone https://github.com/HuskyIsHere/innvestigate-application.git   
+
+    cd innvestigate-application  
 ## Build Docker container
-```docker-compose up --build```
+    docker-compose up --build
 ## Open innvestigate-application
-Backend main port  
-```http://localhost:8000/```  
+Backend main port   
+
+    http://localhost:8000/  
+
 Frontend main port   
-```http://localhost:3000/home```
+
+    http://localhost:3000/home
