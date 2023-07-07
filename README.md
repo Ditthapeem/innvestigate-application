@@ -4,6 +4,13 @@ This tool base on [iNNvestigate](https://github.com/albermax/innvestigate) and [
 
 The iNNvestigate-application is focused on compares the results of each visulization and enables users to organize a set of photographs and identify differences between them.
 
+# Design
+The backend of this application's RESTful API, in which the client and server communicate using the HTTP protocol, is the iNNvestigate-GUI. additionally utilizing [React](https://react.dev/) as the application's frontend   
+
+![img](Design.png)
+
+
+
 # Getting Started
 ## Cloning project   
     git clone https://github.com/HuskyIsHere/innvestigate-application.git   
