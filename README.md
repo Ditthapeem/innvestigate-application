@@ -5,9 +5,9 @@ This tool base on [iNNvestigate](https://github.com/albermax/innvestigate) and [
 The iNNvestigate-application is focused on compares the results of each visulization and enables users to organize a set of photographs and identify differences between them.
 
 # Getting Started
-## Cloning project
-```git clone https://github.com/HuskyIsHere/innvestigate-application.git```
-```cd innvestigate-application```
+## Cloning project   
+```git clone https://github.com/HuskyIsHere/innvestigate-application.git```       
+```cd innvestigate-application```   
 ## Build Docker container
 ```docker-compose up --build```
 ## Open innvestigate-application
