@@ -187,12 +187,12 @@ const Suggest = () => {
                         >
                             <img
                             style={{width: "100%"}}
-                            src={`images/input/${data.input_image}`}/>
+                            src={`/images/input/${data.input_image}`}/>
                             <p>{data.input_image}</p>
                         </div>
                         <div className="output-image" >
                             <img
-                            src={`images/input/${data.input_image}`}/>
+                            src={`/images/input/${data.input_image}`}/>
                             <p>{data.input_image}</p>
                             <h1>Model Prediction</h1>
                             <ul>
@@ -225,13 +225,13 @@ const Suggest = () => {
                             >
                                 <img
                                 style={{width: "100%"}}
-                                src={`images/input/${data}`}/>
+                                src={`/images/input/${data}`}/>
                                 <p>{data}</p>
                             </div>
                             <div className="output-image" >
                                 <img
                                 style={{ width: '400px', height: '400px' }}
-                                src={`images/input/${data}`}/>
+                                src={`/images/input/${data}`}/>
                                 <p>{data}</p>
                                 <h1>Model Prediction</h1>
                                 <ul>

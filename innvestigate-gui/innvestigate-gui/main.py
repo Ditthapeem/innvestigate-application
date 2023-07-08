@@ -138,7 +138,8 @@ CORS(app)
 
 # static paths
 STATIC_PATH = "innvestigate-gui/static/"
-FRONTEND_PATH = "../frontend/public/images/input/"
+FRONTEND_INPUT_PATH = "/frontend/public/images/input"
+FRONTEND_OUTPUT_PATH = "/frontend/public/images/output"
 
 INPUT_PATH = STATIC_PATH + "input/"
 INPUT_IMAGES_PATH = INPUT_PATH + "images/"
@@ -337,16 +338,11 @@ def move_image(backend_path, frontend_path, img_name):
     # Set the source and destination paths
     source_path = backend_path + img_name
 
-    destination_path = os.path.join(frontend_path, img_name)
-
-    print("source_path", source_path)
-    print("destination_path", destination_path)
-
     # # Move the file
     # shutil.move(source_path, destination_path)
 
     #Copy image file for debug
-    shutil.copy(source_path, destination_path)
+    shutil.copy(source_path, os.path.join(frontend_path, img_name))
 
 @bp.route('/upload_images', methods=('POST',))
 @cross_origin(origins="*")
@@ -356,9 +352,6 @@ def upload_images():
 
     :return: Response containing loaded image/s filename or error
     """
-    
-    frontend_folder = "../frontend/public/images/input/"
-    frontend_folder = os.path.join(os.getcwd(), frontend_folder)
 
     images = request.files.getlist("images")
     for image in images:
@@ -375,8 +368,11 @@ def upload_images():
     current_path = os.getcwd()
     print(current_path)
     for image in images:   
-        print(image)      
-        move_image(INPUT_IMAGES_PATH, frontend_folder, image)
+        print(image)  
+        try:    
+            move_image(INPUT_IMAGES_PATH, FRONTEND_INPUT_PATH, image)
+        except:
+            pass
     return jsonify(response.toJSON())
 
 
@@ -2046,8 +2042,9 @@ def visualize():
     app.logger.info("'Visualize' - input images: " + str(input_images) + " - visualizations: " + str(visualizations))
 
     response = Response(1, "success", content={"input_images": input_images, "visualizations": visualizations})
-    frontend_folder = "../frontend/public/images/output/"
-    frontend_folder = os.path.join(os.getcwd(), frontend_folder)
     for image in visualizations[0]['output_images']:
-        move_image(OUTPUT_IMAGES_PATH, frontend_folder, image)
+        try:
+            move_image(OUTPUT_IMAGES_PATH, FRONTEND_OUTPUT_PATH, image)
+        except:
+            pass
     return jsonify(response.toJSON())

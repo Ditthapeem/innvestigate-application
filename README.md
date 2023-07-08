@@ -17,7 +17,13 @@ The backend of this application's RESTful API, in which the client and server co
 
     cd innvestigate-application  
 ## Build Docker container
+For build iNnvestiagte application first time using
+
     docker-compose up --build
+
+If you already build an container
+
+    docker-compose up
 ## Open innvestigate-application
 Backend main port   
 
@@ -26,3 +32,12 @@ Backend main port
 Frontend main port   
 
     http://localhost:3000/home
+
+# Getting stop
+## Stopping a docker container
+    docker-compose down
+
+## Clearing memory after delete container 
+Note: This step using only when you want to delete an container and build new one please clearing up memory first
+
+    docker builder prune --all

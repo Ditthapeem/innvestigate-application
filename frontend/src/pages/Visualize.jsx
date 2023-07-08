@@ -72,12 +72,12 @@ const Visualize = () => {
                         >
                             <img
                             style={{width: "100%"}}
-                            src={`images/input/${data.input_image}`}/>
+                            src={`/images/input/${data.input_image}`}/>
                             <p>{data.input_image}</p>
                         </div>
                         <div className="output-image" >
                             <img
-                            src={`images/output/${data.output_image}`}/>
+                            src={`/images/output/${data.output_image}`}/>
                             <p>{data.input_image}</p>
                             <h1>Model Prediction</h1>
                             <ul>
@@ -108,12 +108,12 @@ const Visualize = () => {
                             >
                                 <img
                                 style={{width: "100%"}}
-                                src={`images/input/${image}`}/>
+                                src={`/images/input/${image}`}/>
                                 <p>{image}</p>
                             </div>
                             <div className="output-image" >
                                 <img
-                                src={`images/output/${visualize.visualizations[0].output_images[index]}`}/>
+                                src={`/images/output/${visualize.visualizations[0].output_images[index]}`}/>
                                 <p>{image}</p>
                                 <h1>Model Prediction</h1>
                                 <ul>

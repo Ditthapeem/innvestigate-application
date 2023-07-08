@@ -6,13 +6,35 @@ services:
       dockerfile: Dockerfile
     ports:
       - '8000:5000'
+    deploy:
+      resources:
+        limits:
+          cpus: '7.0'  
+          memory: 6GB  
+        reservations:
+          cpus: '6.0'  
+          memory: 2GB  
     volumes:
       - ./innvestigate-gui:/innvestigate-gui
+      - shared_data:/frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
       - '3000:3000'
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'   
+          memory: 2GB    
+        reservations:
+          cpus: '0.1'   
+          memory: 1GB  
     depends_on:
       - backend
+    volumes:
+      - shared_data:/frontend
+
+volumes:
+  shared_data:
