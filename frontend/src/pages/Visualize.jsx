@@ -9,7 +9,10 @@ import '../assets/Visualize.css';
 
 const Visualize = () => {
 
+    let [index, SetIndex] = useState(null)
+
     let [visualize, SetVisualize] = useState(null)
+    let [listVisualize, SetListVisualize] = useState([])
 
     let [data, setData] = useState(JSON.parse(localStorage.getItem("data")))
     let [shareConstant, setShareConstant] = useState(JSON.parse(localStorage.getItem("share")))
@@ -18,47 +21,86 @@ const Visualize = () => {
 
     let [showSelect, setShowSelect] = useState(false)
 
-    const visualizeApi = async(e) => {
+    async function visualizeApi(index) {
         const url = `${configData.API.PATH}visualize`
-        await axios.post(url, JSON.stringify(data), {
+        await axios.post(url, JSON.stringify(data[index]), {
                     headers: {
                         'Content-Type': 'application/json'
                 }}).then((res) => {
                     console.log(res.data)
-                    SetVisualize(res.data.content)
+                    listVisualize.push(res.data.content)
                     console.log(res.data.content.output_images)
 
                 })
     }
 
-    useEffect(() => {
-        applyPostProcess();
-        updateNullValues();
-        visualizeApi();
-    },[])
+    function applyPostProcess(index) {
+        console.log(data[index])
+        console.log(shareConstant[index])
+        if (data[index].method === "gradient"){
+            data[index].gradient_postprocess = String(shareConstant[index]) 
+        } else if (data[index].method === "smoothgrad") {
+            data[index].smoothgrad_postprocess = String(shareConstant[index]) 
+        } else if (data[index].method === "integrated_gradients"){
+            data[index].integrated_gradients_postprocess = String(shareConstant[index]) 
+        }
+        console.log("data", data[index])
+    }
 
-    function updateNullValues() {
-        Object.keys(data).forEach(keys => {
-            if(data[keys] === null){
-                data[keys] = ""
+    function updateNullValues(index) {
+        Object.keys(data[index]).forEach(keys => {
+            if(data[index][keys] === null){
+                data[index][keys] = ""
             }
         })
     };
 
+    useEffect(() => {
+        console.log(data)
+        console.log(shareConstant)
+        for(let i = 0; i < data.length;i++){
+            applyPostProcess(i);
+            updateNullValues(i);
+            visualizeApi(i);
+        }
+        console.log(data)
+    },[])
+
     const handleClick = (item) => {
+        console.log(selectFilterImage)
         if(selectFilterImage.length === 0){
             console.log("empty");
             setSelectFilterImage([...selectFilterImage, item])
         }else{
-            if(selectFilterImage.some(e => e.input_image == item.input_image)){
+            if(selectFilterImage.some(e => e.output_image == item.output_image)){
                 setSelectFilterImage(selectFilterImage.filter(e =>
-                    e.input_image != item.input_image
+                    e.output_image != item.output_image
                 ));
             }else{
                 setSelectFilterImage([...selectFilterImage, item])
             }
         }
     };
+
+    function handleVisulaize(index) {
+        SetVisualize(listVisualize[index])
+    }
+
+    function VisualizeButton() {
+        console.log(index)
+        return(
+            <div>
+                <center><select value={index} onChange={(e) => {SetIndex(e.target.value); handleVisulaize(e.target.value)}}>
+                    <option value="">Select an Visualize</option>
+                    {data.map((option, index) => (
+                    <option key={index} value={index}>
+                        {index+1}
+                    </option>
+                    ))}
+                </select></center><br/>
+            </div>
+        );
+    }
 
     function ShowImage() {
         if(showSelect){
@@ -100,7 +142,7 @@ const Visualize = () => {
                         <div>
                             <div 
                             className="input-image"
-                            style={ selectFilterImage.some(e => e.input_image == image) ? { background: configData.COLOR.GREEN, color: "white"} : {}}
+                            style={ selectFilterImage.some(e => e.output_image == visualize.visualizations[0].output_images[index]) ? { background: configData.COLOR.GREEN, color: "white"} : {}}
                             onClick={() => handleClick({input_image: image,
                                                         output_image: visualize.visualizations[0].output_images[index],
                                                         prediction: visualize.visualizations[0].predictions[index]
@@ -132,18 +174,6 @@ const Visualize = () => {
         }
     }
 
-    function applyPostProcess() {
-        console.log(data.method)
-        console.log(shareConstant.postProcess)
-        if (data.method === "gradient"){
-            data.gradient_postprocess = shareConstant.postProcess
-        } else if (data.method === "smoothgrad") {
-            data.smoothgrad_postprocess = shareConstant.postProcess
-        } else if (data.method === "integrated_gradients"){
-            data.integrated_gradients_postprocess = shareConstant.postProcess
-        }
-    }
-
     function Debug() {
         console.log(data)
         console.log(visualize)
@@ -155,21 +185,28 @@ const Visualize = () => {
             <NavBar></NavBar>
                 <div className="information">
                         <h1>Visualization</h1>
-                        <ul>
-                            <li>Model: {data.predefined_models[0]}</li>
-                            <li>Method: {data.method}</li>
-                            <li>Layer name: {data.layer_name}</li>
-                            <li>Number of Images: {data.images.length}</li>
-                        </ul>
-                        <button 
-                        style={showSelect ? { background: configData.COLOR.GREEN, color: "white"} : {}}
-                        onClick={e => setShowSelect(!showSelect)}>
-                            Show Collection
-                        </button>
+                        <VisualizeButton/>
+                        { index != null &&
+                        <div>
+                            <ul>
+                                <li>Model: {data[index].predefined_models[0]}</li>
+                                <li>Method: {data[index].method}</li>
+                                <li>Layer name: {data[index].layer_name}</li>
+                                <li>Number of Images: {data[index].images.length}</li>
+                            </ul>
+                            <button 
+                            style={showSelect ? { background: configData.COLOR.GREEN, color: "white"} : {}}
+                            onClick={e => setShowSelect(!showSelect)}>
+                                Show Collection
+                            </button>
+                        </div>
+                        }
                 </div>
-                <div className="image-colum">
-                    <ShowImage/>
-                </div>
+                { index != null &&
+                    <div className="image-colum">
+                        <ShowImage/>
+                    </div>
+                }
             <Debug/>
         </div>
     );

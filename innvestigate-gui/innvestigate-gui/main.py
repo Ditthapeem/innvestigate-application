@@ -620,7 +620,7 @@ def get_inputs(reason, json_request):
     
     # model selection
     custom_model_selected = json_request["custom_model_selected"]  # flag
-    n_models = json_request["n_models"]
+    n_models = int(json_request["n_models"])
     if not n_models:
         response = [Response(0, "error", "Model not selected.")]
         return response
