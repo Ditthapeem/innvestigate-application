@@ -184,6 +184,8 @@ const Visualize = () => {
         <div>
             <NavBar></NavBar>
                 <div className="information">
+                    {showSelect == false ? 
+                    <div>
                         <h1>Visualization</h1>
                         <VisualizeButton/>
                         { index != null &&
@@ -201,6 +203,51 @@ const Visualize = () => {
                             </button>
                         </div>
                         }
+                    </div> : 
+                    <div>
+                        <h1>Visualization</h1>
+                        <ul>
+                            <li>Model:  
+                                {" "}
+                                {data.map((item, index) => (
+                                    <div>
+                                        <ul>
+                                            <li>{item.predefined_models[0]}</li>
+                                            {index !== data.length - 1 && ' '}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </li>
+                            <li>Method: 
+                                {" "}
+                                {data.map((item) => (
+                                    <div>
+                                        <ul>
+                                            <li>{item.method}</li>
+                                            {index !== data.length - 1 && ' '}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </li>
+                            <li>Layer name:
+                                {" "} 
+                                {data.map((item) => (
+                                    <div>
+                                        <ul>
+                                            <li>{item.layer_name}</li>
+                                            {index !== data.length - 1 && ' '}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </li>
+                            <li>Number of Images: {data[0].images.length}</li>
+                        </ul>
+                        <button 
+                            style={showSelect ? { background: configData.COLOR.GREEN, color: "white"} : {}}
+                            onClick={e => setShowSelect(!showSelect)}>
+                                Show Collection
+                        </button>
+                    </div>}
                 </div>
                 { index != null &&
                     <div className="image-colum">
