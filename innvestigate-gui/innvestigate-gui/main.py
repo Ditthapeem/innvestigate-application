@@ -540,6 +540,10 @@ def download_classes():
     json_request = request.get_json()
     
     custom_model_selected = json_request["custom_model_selected"]
+    if custom_model_selected == "False":
+        custom_model_selected = False
+    elif custom_model_selected == "True":
+        custom_model_selected = True
     if custom_model_selected:
         custom_class_index = json_request["custom_class_index"]
         custom_n_classes = json_request["custom_n_classes"]
@@ -560,6 +564,7 @@ def download_classes():
         
         n_classes = custom_n_classes
     else:
+        print("Start Download")
         # from keras_applications/imagenet_utils.py
         class_index_path = ('https://s3.amazonaws.com/deep-learning-models/'
                             'image-models/imagenet_class_index.json')

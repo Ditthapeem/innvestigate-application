@@ -11,6 +11,8 @@ const Visualize = () => {
 
     let [index, SetIndex] = useState(null)
 
+    let [finishIndex, setFinishIndex] = useState(0)
+
     let [visualize, SetVisualize] = useState(null)
     let [listVisualize, SetListVisualize] = useState([])
 
@@ -27,10 +29,13 @@ const Visualize = () => {
                     headers: {
                         'Content-Type': 'application/json'
                 }}).then((res) => {
+                    finishIndex += 1
+                    setFinishIndex(finishIndex)
                     console.log(res.data)
                     listVisualize.push(res.data.content)
                     console.log(res.data.content.output_images)
-
+                }).catch((error) => {
+                    alert(`Error occurred on visualize(${index-1})  image(s).`);
                 })
     }
 
@@ -61,9 +66,8 @@ const Visualize = () => {
         for(let i = 0; i < data.length;i++){
             applyPostProcess(i);
             updateNullValues(i);
-            visualizeApi(i);
+            // visualizeApi(i);
         }
-        console.log(data)
     },[])
 
     const handleClick = (item) => {
@@ -91,7 +95,7 @@ const Visualize = () => {
         return(
             <div>
                 <center><select value={index} onChange={(e) => {SetIndex(e.target.value); handleVisulaize(e.target.value)}}>
-                    <option value="">Select an Visualize</option>
+                    <option value={null}>Select an Visualize</option>
                     {data.map((option, index) => (
                     <option key={index} value={index}>
                         {index+1}
@@ -249,9 +253,13 @@ const Visualize = () => {
                         </button>
                     </div>}
                 </div>
-                { index != null &&
+                { finishIndex === data.length ?
                     <div className="image-colum">
                         <ShowImage/>
+                    </div>
+                    : 
+                    <div className="status">
+                        <h1>Visualizing Please Wait {finishIndex}/{data.length}</h1>
                     </div>
                 }
             <Debug/>

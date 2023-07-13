@@ -9,7 +9,7 @@ import '../assets/Home.css';
 const Home = () => {
 
     const [select, setSelect] = useState({
-        images: null,
+        images: [],
         n_models: 1,
         custom_model_selected: "False",
         custom_class_index: null,
@@ -77,7 +77,7 @@ const Home = () => {
             const temp_dict = {}
             const url = `${configData.API.PATH}download_classes`
             const jsonForm = {
-                'custom_model_selected': false,
+                'custom_model_selected': "False",
                 'custom_class_index': '',
                 'custom_n_classes': ''
             };
@@ -87,6 +87,7 @@ const Home = () => {
                     'Content-Type': 'application/json'
                 }
             }).then((res) => {
+                console.log(res.data.content)
                 for (let index = 0; index < res.data.content.length; index++) {
                     const value = res.data.content[index];
                     temp_dict[index] = value;
@@ -634,7 +635,7 @@ const Home = () => {
                 <label
                     htmlFor="file"
                     className="inputImageLabel"
-                    style={ select.images != null ? { background: configData.COLOR.GREEN, color: "white"} : {}}
+                    style={ select.images.length != 0 ? { background: configData.COLOR.GREEN, color: "white"} : {}}
                     >
                         Adding Images
                     <input 
@@ -647,7 +648,7 @@ const Home = () => {
                     </input>
                 </label>
                 <center>
-                    { select.images === null &&
+                    { select.images.length === 0 &&
                     <button onClick={handleUploadApi}>
                         Upload
                     </button>}
@@ -677,11 +678,18 @@ const Home = () => {
     function handleAddVisualize() {
         select.predefined_models = [select.predefined_models]
         let tempSelect = {...select} 
-        const tempShareConstant = shareConstant.postProcess
+        let tempShareConstant
+        if (shareConstant.postProcess === undefined){
+            tempShareConstant = null
+        }else{
+            console.log(shareConstant.postProcess);
+            tempShareConstant = shareConstant.postProcess
+        }
         const updatedShareConstant = [...visualizeShareConstant, tempShareConstant]
         setVisualize(values => [...values, tempSelect])
         setVisualizeShareConstant(updatedShareConstant)
         shareConstant.postProcess = null
+        layers = null
         handleChange()
     }
 
@@ -713,7 +721,13 @@ const Home = () => {
                     <tbody>
                         <tr>Input Images:</tr>
                         <tr>
-                            <UploadImage/>
+                            {   Object.keys(imagenetClass).length !== 0 ?
+                                <div>
+                                    <UploadImage/>
+                                </div>
+                            :
+                                <center><h2>Loading Please Wait</h2></center>
+                            }  
                         </tr>
                         <tr>Predefined Models:</tr>
                         <tr><ModelsButtonGroup/></tr>

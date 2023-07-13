@@ -8,10 +8,8 @@ WORKDIR /innvestigate-gui
 COPY . .
 
 # Install dependencies
-RUN ["pip", "install", "-e", "."]
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+RUN ["pip", "install", "-r", "requirements.txt"]
 
 # Expose the port
 EXPOSE 5000
