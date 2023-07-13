@@ -10,8 +10,8 @@ const Home = () => {
 
     const [select, setSelect] = useState({
         images: null,
-        n_models: null,
-        custom_model_selected: null,
+        n_models: 1,
+        custom_model_selected: "False",
         custom_class_index: null,
         custom_n_classes: null,
         predefined_models: [null],
@@ -68,6 +68,9 @@ const Home = () => {
         "DeepTaylor":"deep_taylor", "DeepTaylor-Bounded":"deep_taylor.bounded"
     })
 
+    let [visualize, setVisualize] = useState([])
+    let [visualizeShareConstant, setVisualizeShareConstant] = useState([])
+
     useEffect(() => {
         const fetchData = async (e) => {
         try {
@@ -117,14 +120,6 @@ const Home = () => {
 
     }
 
-    function handleChange() {
-        const temp_model = select.predefined_models
-        const temp_images = select.images
-        Object.keys(select).forEach(key => select[key]=null);
-        select.predefined_models = temp_model
-        select.images = temp_images
-    }
-
     function ModelsButtonGroup() {
         const [modelSelected, setModelSelected] = useState(null);
         return (
@@ -134,7 +129,7 @@ const Home = () => {
                 style={ models === select.predefined_models ? { background: configData.COLOR.RED, color: "white"} : { background: configData.COLOR.GRAY}}
                 key={models}
                 active={modelSelected === models}
-                onClick={() => {setSelect(values => ({...values, predefined_models: models})); handleDownLoadLayesApi(models); handleChange()}}
+                onClick={() => {setSelect(values => ({...values, predefined_models: models})); handleDownLoadLayesApi(models);}}
                 >
                     {models}
                 </button>
@@ -154,7 +149,6 @@ const Home = () => {
                 active={methodsSelected === value}
                 onClick={() => {
                     setSelect(values => ({ ...values, method: value }));
-                    handleChange();
                 }}
             >
                 {key}
@@ -648,7 +642,7 @@ const Home = () => {
                         type="file" 
                         name="file" 
                         id="file" 
-                        onChange={handleImagesChange} 
+                        onChange={handleImagesChange}
                         multiple>
                     </input>
                 </label>
@@ -664,11 +658,8 @@ const Home = () => {
 
     function handleVisualizePage() {
         // Register the constant value to localStorage
-        select.n_models = 1
-        select.custom_model_selected = "False"
-        select.predefined_models = [select.predefined_models]
-        localStorage.setItem('data', JSON.stringify(select));
-        localStorage.setItem('share', JSON.stringify(shareConstant));
+        localStorage.setItem('data', JSON.stringify(visualize));
+        localStorage.setItem('share', JSON.stringify(visualizeShareConstant));
         
         // Redirect to a new page
         window.location.href = '/visualize'; 
@@ -676,9 +667,6 @@ const Home = () => {
 
     function handleSuggestPage() {
         // Register the constant value to localStorage
-        select.n_models = 1
-        select.custom_model_selected = "False"
-        select.predefined_models = [select.predefined_models]
         localStorage.setItem('data', JSON.stringify(select));
         localStorage.setItem('share', JSON.stringify(shareConstant));
         
@@ -686,8 +674,33 @@ const Home = () => {
         window.location.href = '/suggest'; 
     } 
 
+    function handleAddVisualize() {
+        select.predefined_models = [select.predefined_models]
+        let tempSelect = {...select} 
+        const tempShareConstant = shareConstant.postProcess
+        const updatedShareConstant = [...visualizeShareConstant, tempShareConstant]
+        setVisualize(values => [...values, tempSelect])
+        setVisualizeShareConstant(updatedShareConstant)
+        shareConstant.postProcess = null
+        handleChange()
+    }
+
+    function handleChange() {
+        const temp_model = select.predefined_models
+        const temp_images = select.images
+        const temp_n_models = select.n_models
+        const temp_custom_model_selected = select.custom_model_selected
+        Object.keys(select).forEach(key => select[key]=null);
+        select.predefined_models = temp_model
+        select.images = temp_images
+        select.n_models = temp_n_models
+        select.custom_model_selected = temp_custom_model_selected
+    }
+
     function Debug() {
-        console.log(select);
+        console.log(select)
+        console.log(visualize);
+        console.log(visualizeShareConstant)
         // console.log(layers);
         // console.log(imagenetClass);
     }
@@ -709,6 +722,14 @@ const Home = () => {
                         {select.method !== null &&
                             <tr><GenerateMethodAttributes/></tr>
                         }
+                        <tr>
+                            <div className="button-group">
+                                <center>
+                                    <p>Number of visualize: {visualize.length}</p>
+                                    <button onClick={handleAddVisualize}>Add Visualize</button>
+                                </center>
+                            </div>
+                        </tr>
                         <tr>
                             <div className="button-group">
                                 <center>
