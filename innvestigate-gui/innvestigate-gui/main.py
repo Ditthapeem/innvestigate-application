@@ -338,9 +338,6 @@ def move_image(backend_path, frontend_path, img_name):
     # Set the source and destination paths
     source_path = backend_path + img_name
 
-    # # Move the file
-    # shutil.move(source_path, destination_path)
-
     #Copy image file for debug
     shutil.copy(source_path, os.path.join(frontend_path, img_name))
 

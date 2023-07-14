@@ -614,6 +614,7 @@ const Home = () => {
         }
 
         const handleUploadApi = async(e) => {
+            e.preventDefault()
             const url = `${configData.API.PATH}upload_images`
             const formData = new FormData()
             image.forEach((file, index) => {

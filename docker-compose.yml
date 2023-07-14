@@ -9,6 +9,10 @@ services:
     volumes:
       - ./innvestigate-gui:/innvestigate-gui
       - shared_data:/frontend
+    deploy:
+      resources:
+        limits:
+          memory: 6G
   frontend:
     build:
       context: ./frontend
@@ -19,6 +23,10 @@ services:
       - backend
     volumes:
       - shared_data:/frontend
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
 volumes:
   shared_data:

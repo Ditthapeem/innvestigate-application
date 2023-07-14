@@ -26,6 +26,7 @@ const Visualize = () => {
     async function visualizeApi(index) {
         const url = `${configData.API.PATH}visualize`
         await axios.post(url, JSON.stringify(data[index]), {
+                    timeout: 0,
                     headers: {
                         'Content-Type': 'application/json'
                 }}).then((res) => {
