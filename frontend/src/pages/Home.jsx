@@ -689,7 +689,7 @@ const Home = () => {
         setVisualize(values => [...values, tempSelect])
         setVisualizeShareConstant(updatedShareConstant)
         shareConstant.postProcess = null
-        layers = null
+        setLayers(null)
         handleChange()
     }
 

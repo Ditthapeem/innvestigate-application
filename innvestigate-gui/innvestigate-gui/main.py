@@ -1434,6 +1434,7 @@ def visualize():
                     
                     # save class selection
                     class_id = json_request["class_id"]
+                    print(class_id)
                     if not class_id:
                         response = Response(0, "error", "Invalid class selection.")
                         return jsonify(response.toJSON())

@@ -32,10 +32,10 @@ const Visualize = () => {
                     finishIndex += 1
                     setFinishIndex(finishIndex)
                     console.log(res.data)
-                    listVisualize.push(res.data.content)
+                    listVisualize.splice(index, 0, res.data.content)
                     console.log(res.data.content.output_images)
                 }).catch((error) => {
-                    alert(`Error occurred on visualize(${index-1})  image(s).`);
+                    alert(`Error occurred on visualize(${index})  image(s).`);
                 })
     }
 
@@ -66,7 +66,7 @@ const Visualize = () => {
         for(let i = 0; i < data.length;i++){
             applyPostProcess(i);
             updateNullValues(i);
-            // visualizeApi(i);
+            visualizeApi(i);
         }
     },[])
 
