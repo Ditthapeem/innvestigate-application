@@ -39,7 +39,7 @@ const Visualize = () => {
                     }
                     console.log(res.data.content.output_images)
                 }).catch((error) => {
-                    alert(`Error occurred on visualize(${index})  image(s).`);
+                    alert(error);
                 })
     }
 
