@@ -34,6 +34,9 @@ const Visualize = () => {
                     setFinishIndex(finishIndex)
                     console.log(res.data)
                     listVisualize.splice(index, 0, res.data.content)
+                    if(index+1 < data.length){
+                        visualizeApi(index+1)
+                    }
                     console.log(res.data.content.output_images)
                 }).catch((error) => {
                     alert(`Error occurred on visualize(${index})  image(s).`);
@@ -67,8 +70,8 @@ const Visualize = () => {
         for(let i = 0; i < data.length;i++){
             applyPostProcess(i);
             updateNullValues(i);
-            visualizeApi(i);
         }
+        visualizeApi(0);
     },[])
 
     const handleClick = (item) => {

@@ -309,6 +309,7 @@ def custom_decode_predictions(n_classes, class_index_file, preds, top=1):
 
 
 @bp.route('/', methods=('GET', 'POST'))
+@cross_origin(origins="*")
 def index():
     """
     Main endpoint, home of the application.
@@ -374,6 +375,7 @@ def upload_images():
 
 
 @bp.route('/upload_custom_model', methods=('POST',))
+@cross_origin(origins="*")
 def upload_custom_model():
     """
     Endpoint for ajax request for uploading custom model HDF5 file.
@@ -396,6 +398,7 @@ def upload_custom_model():
 
 
 @bp.route('/upload_custom_class_index', methods=('POST',))
+@cross_origin(origins="*")
 def upload_custom_class_index():
     """
     Endpoint for ajax request for uploading custom class index JSON file.
@@ -418,6 +421,7 @@ def upload_custom_class_index():
 
 
 @bp.route('/upload_training_images', methods=('POST',))
+@cross_origin(origins="*")
 def upload_training_images():
     """
     Endpoint for ajax request for uploading folder with training images for visualization method that requires it.
@@ -442,6 +446,7 @@ def upload_training_images():
 
 
 @bp.route('/download_layers', methods=('POST',))
+@cross_origin(origins="*")
 def download_layers():
     """
     Endpoint for ajax request for downloading layers of a loaded model or a predefined Keras one.
@@ -525,6 +530,7 @@ def download_layers():
 
 
 @bp.route('/download_classes', methods=('POST',))
+@cross_origin(origins="*")
 def download_classes():
     """
     Endpoint for ajax request for downloading classes predicted by a loaded model.
