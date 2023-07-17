@@ -480,13 +480,21 @@ const Home = () => {
                 <label>
                     MobileNet α: 
                 </label><br/>
-                <input
-                    className="neuron-index"
-                    type="number"
-                    value={select.mobilenet_alpha}
-                    onChange={(e) => 
-                    setSelect(values => 
-                    ({...values, mobilenet_alpha: parseInt(e.target.value)}))}/>
+                <select
+                className="neuron-index"
+                value={select.mobilenet_alpha}
+                onChange={(e) =>
+                    setSelect((values) => ({
+                    ...values,
+                    mobilenet_alpha: parseFloat(e.target.value),
+                    }))
+                }
+                >
+                <option value="0.25">0.25</option>
+                <option value="0.50">0.50</option>
+                <option value="0.75">0.75</option>
+                <option value="1.0">1.0</option>
+                </select>
                 <label>
                     MobileNet depth multiplier: 
                 </label><br/>
@@ -519,13 +527,23 @@ const Home = () => {
                     <label>
                         MobileNetV2 α: 
                     </label><br/>
-                    <input
-                        className="neuron-index"
-                        type="number"
-                        value={select.mobilenetv2_alpha}
-                        onChange={(e) => 
-                        setSelect(values => 
-                        ({...values, mobilenetv2_alpha: parseInt(e.target.value)}))}/>
+                    <select
+                className="neuron-index"
+                value={select.mobilenetv2_alpha}
+                onChange={(e) =>
+                    setSelect((values) => ({
+                    ...values,
+                    mobilenetv2_alpha: parseFloat(e.target.value),
+                    }))
+                }
+                >
+                <option value="0.35">0.35</option>
+                <option value="0.50">0.50</option>
+                <option value="0.75">0.75</option>
+                <option value="1.0">1.0</option>
+                <option value="1.3">1.3</option>
+                <option value="1.4">1.4</option>
+                </select>
                 </div>
             </div>);
     }
