@@ -130,7 +130,7 @@ const Home = () => {
                 style={ models === select.predefined_models ? { background: configData.COLOR.RED, color: "white"} : { background: configData.COLOR.GRAY}}
                 key={models}
                 active={modelSelected === models}
-                onClick={() => {setSelect(values => ({...values, predefined_models: models})); handleDownLoadLayesApi(models);}}
+                onClick={() => {setSelect(values => ({...values, predefined_models: models})); handleDownLoadLayesApi(models); setLayers(null)}}
                 >
                     {models}
                 </button>
@@ -350,7 +350,7 @@ const Home = () => {
                     </div>
                 :
                 <div>
-                    <h2>Please Waiting for Layers</h2>
+                    <h3>Please Waiting for Layers</h3>
                 </div> 
                 }
             </div>
@@ -371,7 +371,7 @@ const Home = () => {
                 </div>
             :
             <div>
-                <h2>Please Waiting for Layers</h2>
+                <h3>Please Waiting for Layers</h3>
             </div> 
             }
             </div>
@@ -771,7 +771,7 @@ const Home = () => {
                                     <UploadImage/>
                                 </div>
                             :
-                                <center><h2>Loading Please Wait</h2></center>
+                                <center><h3>Loading Please Wait</h3></center>
                             }  
                         </tr>
                         <tr>Predefined Models:</tr>
