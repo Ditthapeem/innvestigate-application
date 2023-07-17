@@ -301,13 +301,14 @@ const Home = () => {
             <div className="generate">
                 <label>ε: </label><br/>
                 <div className="input-number">
-                    <input
-                        className="neuron-index"
-                        type="number"
-                        value={select.epsilon}
-                        onChange={(e) => 
-                        setSelect(values => 
-                        ({...values, epsilon: parseInt(e.target.value)}))}/>
+                <input
+                    className="neuron-index"
+                    type="number"
+                    step="0.01"
+                    value={select.epsilon}
+                    onChange={(e) => 
+                        setSelect(values => ({...values, epsilon: parseFloat(e.target.value)}))}
+                    />
                 </div>
             </div>
         );
@@ -341,12 +342,16 @@ const Home = () => {
     function GroupGenerateAttributesNeuronMode() {
         return(
             <div className="generate">
-                { layers != null &&
+                { layers != null ?
                     <div>
                         <GenerateLayer/>
                         <GenerateNeuronSelectionMode/>
                         <GenerateActivation/>
                     </div>
+                :
+                <div>
+                    <h2>Please Waiting for Layers</h2>
+                </div> 
                 }
             </div>
         );
@@ -355,7 +360,7 @@ const Home = () => {
     function GroupGenerateAttributesClass() {
         return(
             <div className="generate">
-            { layers != null &&
+            { layers != null ?
                 <div>
                     <GenerateLayer/>
                     { imagenetClass != null &&
@@ -364,6 +369,10 @@ const Home = () => {
                     </div>
                     }
                 </div>
+            :
+            <div>
+                <h2>Please Waiting for Layers</h2>
+            </div> 
             }
             </div>
         );
@@ -490,11 +499,16 @@ const Home = () => {
                     }))
                 }
                 >
+                <option
+                    value={null}
+                    >
+                        Select alpha value
+                </option>
                 <option value="0.25">0.25</option>
                 <option value="0.50">0.50</option>
                 <option value="0.75">0.75</option>
                 <option value="1.0">1.0</option>
-                </select>
+                </select><br/><br/>
                 <label>
                     MobileNet depth multiplier: 
                 </label><br/>
@@ -509,12 +523,19 @@ const Home = () => {
                     MobileNet dropout: 
                 </label><br/>
                 <input
-                    className="neuron-index"
-                    type="number"
-                    value={select.mobilenet_dropout}
-                    onChange={(e) => 
-                    setSelect(values => 
-                    ({...values, mobilenet_dropout: parseInt(e.target.value)}))}/>
+                className="neuron-index"
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                value={select.mobilenet_dropout}
+                onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    if (!isNaN(value) && value >= 0 && value <= 1) {
+                    setSelect(values => ({...values, mobilenet_dropout: value}));
+                    }
+                }}
+                />
                 </div>
             </div>
         );
@@ -527,7 +548,7 @@ const Home = () => {
                     <label>
                         MobileNetV2 α: 
                     </label><br/>
-                    <select
+                <select
                 className="neuron-index"
                 value={select.mobilenetv2_alpha}
                 onChange={(e) =>
@@ -537,6 +558,11 @@ const Home = () => {
                     }))
                 }
                 >
+                <option
+                    value={null}
+                    >
+                        Select alpha value
+                </option>
                 <option value="0.35">0.35</option>
                 <option value="0.50">0.50</option>
                 <option value="0.75">0.75</option>
