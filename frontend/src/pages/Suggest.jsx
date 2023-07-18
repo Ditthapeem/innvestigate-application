@@ -31,7 +31,7 @@ const Suggest = () => {
     let chart = []
 
     useEffect(() => {
-        console.log(data)
+        console.log('data',data)
         data.input_images_belong_to_same_class = 'False'
         data.input_images_class_id = null
         applyPostProcess();
@@ -69,6 +69,8 @@ const Suggest = () => {
                     SetSuggest(res.data.content[0])
                     setImage(res.data.content[0].input_images.reverse())
                     setPrediction(res.data.content[0].model_predictions.reverse())
+                }).catch((error) => {
+                    alert(error)
                 })
     }
 

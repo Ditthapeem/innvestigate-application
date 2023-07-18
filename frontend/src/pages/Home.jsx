@@ -713,8 +713,8 @@ const Home = () => {
 
     function handleSuggestPage() {
         // Register the constant value to localStorage
-        localStorage.setItem('data', JSON.stringify(select));
-        localStorage.setItem('share', JSON.stringify(shareConstant));
+        localStorage.setItem('data', JSON.stringify(visualize[0]));
+        localStorage.setItem('share', JSON.stringify(visualizeShareConstant[0]));
         
         // Redirect to a new page
         window.location.href = '/suggest'; 
